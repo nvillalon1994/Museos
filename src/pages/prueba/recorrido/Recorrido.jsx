@@ -143,7 +143,7 @@ export default function Recorrido({idMuseo}) {
                     </ul>
                     </nav>
                     
-                    <div className='relative'>
+                    <div className='relative h-[426px]'>
                     <button className='text-colo6-phone-oringe absolute top-4 left-4' onClick={()=>{setOpen(false)}}><FaArrowLeft/></button>
                         <img src={recorrido.imgreco} alt="" />
                         <div className=" flex justify-around  w-full my-1">
