@@ -25,12 +25,15 @@ import {FaArrowLeft} from 'react-icons/fa'
 import {IoMdArrowDropdown,IoMdArrowDropup} from 'react-icons/io'
 import { obtenerMuseo } from '../../../features/museo/museoSlice'
 import { obtenerLinksmp } from '../../../features/Linksmp/linksmpSlice'
+import { storage } from '../../../firebase';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 
 export default function Bienvenida({idMuseo}) {
   const [open,setOpen] = useState(false)
   const [openlink,setOpenlink] = useState(false)
   const [color,setCorlor] = useState(false)
   const [link,setLink] = useState({})
+  const [name,setName]=useState()
   const [boton,setBoton] = useState(false)
   const [linkmp,setLinkmp]=useState({})
   
@@ -53,14 +56,16 @@ export default function Bienvenida({idMuseo}) {
       textlink4:textlink4.value,
       textlink5:textlink5.value,
       urllink:urllink.value,
-      id:idLink.value
+      
     }
     
 
     console.log(linkEditado)
     await updateLink(id,idLink.value,linkEditado)
     dispatch(obtenerMuntref_Links(id))
-    setLink(linkEditado)
+    const newLink =linkEditado
+    newLink.id=idLink.value
+    setLink(newLink)
     e.target.reset()
     // dispatch(obtenerMuseos())
     // console.log("se ejecuta")
@@ -79,6 +84,49 @@ export default function Bienvenida({idMuseo}) {
   }
   
   console.log(linksmp)
+
+  const subir =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    console.log(file)
+    uploadFiles(file)
+    
+    
+  }
+  
+  const uploadFiles =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            // setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...link,...newObject}
+              console.log(objeto)
+
+              setLink(objeto)
+              
+            })
+        }
+        )
+        
+        
+    
+  }
+
 
   const cargarLinkmp=(idLink)=>{
     console.log(idLink)
@@ -100,14 +148,16 @@ export default function Bienvenida({idMuseo}) {
     const linkEditado = {
       ulinkmp:ulinkmp.value,
       urllinkmp:urllinkmp.value,
-      id:idlink.value}
+      }
     console.log(link.id)
     // console.log(linkEditado)
     console.log(id,link.id,idlink.value,linkEditado)
     await updateLinkmp(id,link.id,idlink.value,linkEditado)
     
     dispatch(obtenerLinksmp({id,idLink:link.id}))
-    setLinkmp(linkEditado)
+    const newLinkmp =linkEditado
+    newLinkmp.id=idlink.value
+    setLinkmp(newLinkmp)
     e.target.reset()
     // dispatch(obtenerMuseo(id))
   }
@@ -199,9 +249,10 @@ export default function Bienvenida({idMuseo}) {
   
               </div>}
                 
-                    
-                  {link&&<form  onSubmit={editarLink} className='w-2/4 flex flex-col '>
-                        <h2 className='text-3xl text-center w-full mx-auto  text-white mt-6 '>Modifica a {link.nombrelink}</h2>
+              {boton&&<button className='absolute w-1/6 top-20 right-16 bg-emerald-400 text-white text-xs bg-opacity-80 text-center py-1 z-40 ' 
+                            onClick={()=>{cargarLinkmp(link.id)}} >Ver link del recorrido</button>}
+                  {link&&<form  onSubmit={editarLink} className='w-2/4 flex flex-col relative '>
+                        <h2 className='text-3xl text-center w-full mx-auto   text-white mt-6 '>Modifica a {link.nombrelink}</h2>
                         
                         <div className=' relative h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black mt-8'>
                             <div className='h-full  flex flex-col gap-8 mt-4  w-1/2 px-10'> 
@@ -209,10 +260,12 @@ export default function Bienvenida({idMuseo}) {
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="">DescLink</label>
                                   <input type="text" name='desclink' defaultValue={link.desclink} />
+                                  
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="">Imagen del recorrido</label>
                                   <input type="text" name='imglink' defaultValue={link.imglink} />
+                                  <input type="file" onChange={subir} onClick={()=>{setName("imglink")}}  />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="">Nboton</label>
@@ -250,8 +303,7 @@ export default function Bienvenida({idMuseo}) {
                                   <input type="text" name='textlink5' defaultValue={link.textlink5}/>
                                 </div>      
                             </div>
-                            {boton&&<button className='absolute w-1/3 top-0 right-0 bg-emerald-400 text-white text-xs bg-opacity-80 text-center py-1 ' 
-                            onClick={()=>{cargarLinkmp(link.id)}} >Ver link del recorrido</button>}
+                            
                         </div>
                         
                         <button className='text-center mx-auto z-10 bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar Recorrido</button>

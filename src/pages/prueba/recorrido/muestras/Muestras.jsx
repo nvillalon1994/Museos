@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import Page from '../../../../components/Page'
 import { obtenerMuestras } from '../../../../features/muestras/muestrasSlice'
-import { updateMuesta, updateObra } from '../../../../firebase'
+import { createMuestra, createObra, deleteMuestra, deleteObra, updateMuesta, updateObra } from '../../../../firebase'
 import {
   BiLogOutCircle,
   BiWorld,
@@ -47,6 +47,7 @@ export default function Tressesenta ({ids}) {
   
   
   const id=objeto.idMuseo
+  console.log(id)
   
   
   const {muestras} = useSelector(state=>state.muestras)
@@ -74,13 +75,15 @@ export default function Tressesenta ({ids}) {
          imgmuestra:imgmuestra.value,
          vid:vid.value,
          nombremuestra:nombremuestra.value,
-         id:idMuestra.value
+         
     }
     console.log(muestraEditada)
     console.log(id,idRecorrido,idMuestra.value)
     await updateMuesta(id,idRecorrido,idMuestra.value,muestraEditada)
     dispatch(obtenerMuestras({id,idRecorrido}))
-    setMuestra(muestraEditada)
+    const newMuestra =muestraEditada
+    newMuestra.id=idMuestra.value
+    setMuestra(newMuestra)
     e.target.reset()
     // dispatch(obtenerMuseos())
     // console.log("se ejecuta")
@@ -137,10 +140,62 @@ export default function Tressesenta ({ids}) {
     e.target.reset()
     
   };
+  const crearObra =()=>{
+    if(obras.length===0){
+      const idObra = `1a_obra1`
+      createObra(id,idRecorrido,muestra.id,idObra)
+      const idMuestra = muestra.id
+      dispatch(obtenerObras({id,idRecorrido,idMuestra}))
+      traerObras(idMuestra)
+    }else{
+      const a = obras[obras.length-1]
+      const index =parseInt(a.id.substring(7))
+      console.log(index)
+      const idObra = `1a_obra${index+1}`
+      createObra(id,idRecorrido,muestra.id,idObra)
+      const idMuestra = muestra.id
+      dispatch(obtenerObras({id,idRecorrido,idMuestra}))
+      traerObras(idMuestra)
+    }
+  }
+  const eliminarObra =(idObra)=>{
+    const idMuestra = muestra.id
+    deleteObra(id,idRecorrido,idMuestra,idObra)
+    dispatch(obtenerObras({id,idRecorrido,idMuestra}))
+    traerObras(idMuestra)
+  }
+
+
+
+
+  // const a = muestras[muestras.length-1]
+  // const index =parseInt(a.id.substring(10))
+  // console.log(index)
+  const crearMuestra =(e)=>{
+    e.preventDefault()
+    const {name} = e.target
+    if(muestras.length===0){
+      createMuestra(id,idRecorrido,"1a_muestra1",name.value) 
+      dispatch(obtenerMuestras({id,idRecorrido}))
+      
+    }
+    else{
+      const a = muestras[muestras.length-1]
+      const index =parseInt(a.id.substring(10))
+      
+      createMuestra(id,idRecorrido,`1a_muestra${index+1}`,name.value)
+      dispatch(obtenerMuestras({id,idRecorrido}))
+    }
+    
+  }
+  const eliminarMuestra = (idMuestra)=>{
+    deleteMuestra(id,idRecorrido,idMuestra)
+    dispatch(obtenerMuestras({id,idRecorrido}))
+  }
   useEffect(()=>{
     
     
-    
+    dispatch(obtenerMuseo(id))
     dispatch(obtenerMuestras({id,idRecorrido}))
     
     
@@ -161,9 +216,11 @@ export default function Tressesenta ({ids}) {
                       
                       <h1 className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white '>{obra.id}</h1>
                       <button onClick={()=>{tomarObra(obra.id)}} className='absolute bottom-[-20px] right-0 bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
+                      <button className='text-white bg-red-600 absolute top-0 right-0 ' onClick={()=>{eliminarObra(obra.id)}}>X</button>
                     </div>
                  
                   )}
+                  <p onClick={crearObra}>Crear obra</p>
                   </div>  
                   {obra&&<form  
                   onSubmit={editarObra}
@@ -210,20 +267,30 @@ export default function Tressesenta ({ids}) {
                         <li className="text-colo6-phone-oringe text-sm text-center w-1/2 border-2 border-b-colo6-phone-oringe border-colo5-phone-gray ">
                         Muestras
                         </li>
+                        
                         <Link className='w-1/2' to={"/"+id+"/recorrido/"+idRecorrido+"/recursos"}><li className="text-white text-sm  text-center m-auto ">Amplía tu recorrido</li></Link>
                         {/* '/:idMuseo/Recorrido/:idRecorrido/Recursos */}
                     </ul>
                     </nav>
                     <Link to={"/"+id+ "/recorrido/"}><button className='w-full '><GoTriangleUp className='text-center w-full text-white bg-colo6-phone-oringe'/></button></Link>
-                    <p className='text-white text-sm'>Muestras:</p>
-                    <div className='grid grid-cols-2 h-[379px] relative w-full overflow-auto contenedor '>
-                      {muestras.map((muestra)=>
-                      <div className='p-1 relative flex flex-col items-center z-10' onClick={()=>{tomarmuestra(muestra.id)}}>
-                        <img  src={muestra.imgmuestra} alt="" />
-                        <p className='text-white text-[9px] absolute bottom-[7px] bg-black py-2 w-full text-center bg-opacity-60'>{muestra.nombremuestra}</p>
+                    <div className='h-[400px]  overflow-auto contenedor'>
+                      <p className='text-white text-sm'>Muestras:</p>
+
+                      <div className='grid grid-cols-2  relative w-full  '>
+                        {muestras.map((muestra)=>
+                        <div className='p-1 relative flex flex-col items-center z-10 h-24' >
+                          <img  src={muestra.imgmuestra} alt="" onClick={()=>{tomarmuestra(muestra.id)}} />
+                          <p className='text-white text-[9px] absolute bottom-[7px] bg-black py-2 w-full text-center bg-opacity-60'>{muestra.nombremuestra}</p>
+                          <button className='text white bg-red-500 absolute top-0 right-0' onClick={()=>{eliminarMuestra(muestra.id)}}>X</button>
+                        </div>
+                        )}
+                        <form action="" onSubmit={crearMuestra}>
+                          <input className='w-32' type="text" name="name" placeholder='Nombre de la muestra'/>
+                          <button>Nueva muestra</button>
+                        </form>
                       </div>
-                      )}
                     </div>
+                    
                     
                     <div className="h-14 bg-black rounded-b-[34px] w-[286px] absolute bottom-0 z-70"></div>
                 </div>

@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export const app = initializeApp(credentials)
-
+export const storage = getStorage(app)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 
@@ -56,6 +56,158 @@ export async function getMuseums(){
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
+
+export async function createLayer(id,idLayer){
+    const infoLayer={
+        Audiolayer:"audioLayer",
+        es360:"si",
+        imglayer:"https://images.unsplash.com/photo-1617257118084-339d30c49b02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        end:"end",
+        nombrelayer:"nombrelayer",
+        textolayer:"textolayer",
+        textolayer2:"textolayer2",
+        textolayer3:"textolayer3",
+        textolayer4:"textolayer4",
+        textolayer5:"textolayer5",
+        titulolayer:"titulolayer"
+    }
+    const info360 = {
+        
+        "360panorama":"panorama"
+
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',idLayer),infoLayer)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/'+idLayer+'/360',"1a_panorama_1"),info360)
+}
+
+export async function deleteLayer(id,idLayer){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/bienvenido",idLayer))
+}
+
+export async function createPanorama(id,idLayer,idPan){
+    const info360 = {
+        
+        "360panorama":"https://images.unsplash.com/photo-1534445291134-f70b7a81f691?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
+
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/'+idLayer+'/360',idPan),info360)
+}
+
+export async function deletePan(id,idLayer,idPan){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/bienvenido/"+idLayer+"/360",idPan))
+}
+
+
+
+export async function createRecorrido(id,idRecorrido, nombre){
+    const infoColRecorrido={
+        audioreco:"audioreco",
+        colorreco:"colorreco",
+        colorreco2:"colorreco2",
+        colorreco3:"colorreco3",
+        colorreco4:"colorreco4",
+        colorreco5:"colorreco5",
+        imgreco:"https://images.unsplash.com/photo-1617257118084-339d30c49b02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        nombrereco:nombre
+
+    }
+    const infoMuestra={
+        audioObra:"insertarAudio",
+        auto:"autor",
+        descmuestra1:"descmuestra1",
+        descmuestra2:"descmuestra2",
+        descmuestra3:"descmuestra3",
+        descmuestra4:"descmuestra4",
+        descmuestra5:"descmuestra5",
+        gallery:true,
+        historiadevida:true,
+        imgautor:"https://images.unsplash.com/photo-1613483811459-1c4bb7a234f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        imgmuestra:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        infoautor:"infoautor",
+        nombremuestra:"nombreMuestra",
+        vid:"vid"
+
+    }
+    const infoObra ={
+        nombreobra:"nombreobra",
+        nombreobra2:"nombreobra2",
+        nombreobra3:"nombreobra3",
+        nombreobra4:"nombreobra4",
+        nombreobra5:"nombreobra5",
+        urlobra:"urlObra"
+    }
+    const infoRecurso ={
+        recuimg:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        recutexto:"recutexto",
+        recutexto2:"recutexto2",
+        recutexto3:"recutexto3",
+        recutexto4:"recutexto4",
+        recutexto5:"recutexto5",
+        recutextobottom:"recutextobottom",
+        recutextobottom2:"recutextobottom2",
+        recutextobottom3:"recutextobottom3",
+        recutextobottom4:"recutextobottom4",
+        recutextobottom5:"recutextobottom5",
+        recutitulo:"recutitulo",
+        recuvid:"recuvid"
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',idRecorrido),infoColRecorrido)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/recursos',"1a_recurso1"),infoRecurso)
+}
+export async function deleteRecorrido(id,idRecorrido){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido",idRecorrido))
+}
+
+export async function createMuestra(id,idRecorrido,idMuestra,nombre){
+    const infoMuestra={
+        audioObra:"insertarAudio",
+        auto:"autor",
+        descmuestra1:"descmuestra1",
+        descmuestra2:"descmuestra2",
+        descmuestra3:"descmuestra3",
+        descmuestra4:"descmuestra4",
+        descmuestra5:"descmuestra5",
+        gallery:true,
+        historiadevida:true,
+        imgautor:"https://images.unsplash.com/photo-1613483811459-1c4bb7a234f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        imgmuestra:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        infoautor:"infoautor",
+        nombremuestra:nombre,
+        vid:"vid"
+
+    }
+    const infoObra ={
+        nombreobra:"nombreobra",
+        nombreobra2:"nombreobra2",
+        nombreobra3:"nombreobra3",
+        nombreobra4:"nombreobra4",
+        nombreobra5:"nombreobra5",
+        urlobra:"urlObra"
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras',idMuestra),infoMuestra)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',"1a_obra1"),infoObra)
+}
+export async function deleteMuestra(id,idRecorrido,idMuestra){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/",idMuestra))
+}
+
+export async function createObra(id,idRecorrido,idMuestra,idObra){
+    const infoObra ={
+        nombreobra:"nombreobra",
+        nombreobra2:"nombreobra2",
+        nombreobra3:"nombreobra3",
+        nombreobra4:"nombreobra4",
+        nombreobra5:"nombreobra5",
+        urlobra:"urlObra"
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',idObra),infoObra)
+}
+export async function deleteObra(id,idRecorrido,idMuestra,idObra){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+'/obrasimg',idObra))
+}
+
 
 
 export async function createMuseums(id,info1,description){
@@ -214,6 +366,8 @@ export async function createMuseums(id,info1,description){
         recutitulo:"recutitulo",
         recuvid:"recuvid"
     }
+    
+
     setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1a_Viaje"),infoColRecorrido)
     setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1b_Arribo"),infoColRecorrido)
     setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1c_Inserción"),infoColRecorrido)
@@ -334,6 +488,7 @@ export async function createMuseums(id,info1,description){
 
  
 }
+
 
 export const deleteMuseum = (id)=> {
     deleteDoc(doc(db, "MuseosPrueba",id))

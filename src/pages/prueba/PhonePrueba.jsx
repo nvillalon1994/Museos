@@ -33,10 +33,16 @@ import Autoplay from 'embla-carousel-autoplay';
 import { NextButton, PrevButton } from "../../components/EmblaCarouselButons";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { storage } from "../../firebase";
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+
+
+
 export default function PhonePrueba({idMuseo}) {
     const objetoIdMuseo = useParams(idMuseo)
     const [open,setOpen]= useState(false)
     const [open2,setOpen2]= useState(false)
+    const [name,setName]= useState()
     
     const id = objetoIdMuseo.idMuseo
     const [banner,setBanner] = useState({})
@@ -74,6 +80,50 @@ export default function PhonePrueba({idMuseo}) {
         console.log("se ejecuta")
         
         dispatch(obtenerMuseo(id))
+      }
+
+      const subir =(e)=>{
+        e.preventDefault()
+        
+        const file = e.target.files[0]
+        console.log(file)
+        uploadFiles(file)
+        
+        
+      }
+      
+      const uploadFiles =(file)=>{
+        if(!file)return
+            const storageRef =ref(storage,`/files/${file.name}`)
+            const uploadTask= uploadBytesResumable(storageRef ,file)
+            uploadTask.on("state_changed",(snapshot)=>{
+                const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+                // setProgress(prog)
+            },(err)=>console.log(err),
+            ()=>{
+                getDownloadURL(uploadTask.snapshot.ref)
+                .then((url)=>{
+                  
+                  
+                  const newObject ={
+                    prop:url
+                  }
+                  newObject[name]= newObject["prop"]
+                  delete newObject["prop"]
+                  console.log(newObject)
+                  const objeto={...museo,...newObject}
+                  console.log(objeto)
+
+                  updateMuseum(museo.id,objeto)
+                  dispatch(obtenerMuseo(id))        
+                  
+                  
+                })
+            }
+            )
+            
+            
+        
       }
     const tomarHigh=(id)=>{
       highlights.map((e)=>{
@@ -285,15 +335,25 @@ export default function PhonePrueba({idMuseo}) {
                                     <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="imgmain">ImgMain</label>
                                         <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgmain' defaultValue={museo.imgmain}/>
+                                        <div className="relative h-5">
+                                          <div className="absolute z-[0] top-[1px] left-[0px] bg-cyan-400 bg-opacity-70 px-2 py-[2px] text-white">Seleccionar archivo</div>
+                                          <input className=" absolute z-[1] top-[1px] left-[0px] w-40 opacity-0" type="file" onChange={subir} onClick={()=>{setName("imgmain")}}  />
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-white" htmlFor="imgmuseo">Img Museo</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgmuseo' defaultValue={museo.imgmuseo}/>
-                                    </div>
+                                    
 
                                         
                                 </div>
                                 <div className='h-full  flex flex-col gap-6 mt-5'>
+                                <div className="flex flex-col gap-1">
+                                        <label className="text-white" htmlFor="imgmuseo">Img Museo</label>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgmuseo' defaultValue={museo.imgmuseo}/>
+                                        <div className="relative h-5">
+                                          <div className="absolute z-[0] top-[1px] left-[0px] bg-cyan-400 bg-opacity-70 px-2 py-[2px] text-white">Seleccionar archivo</div>
+                                          <input className=" absolute z-[1] top-[1px] left-[0px] w-40 opacity-0" type="file" onChange={subir} onClick={()=>{setName("imgmuseo")}}  />
+                                        </div>
+                                        
+                                    </div>
                                     <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="descripcion">Descripcion</label>
                                         <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='descripcion' defaultValue={museo.descripcion}/>
@@ -319,132 +379,6 @@ export default function PhonePrueba({idMuseo}) {
                         </form>
         
         
-        {/* <div className=" flex items-center text-3xl">
-          <BsArrowRightSquareFill />
-        </div> */}
-
-        {/* Segundo  */}
-        {/* <div className="relative ">
-          <div className="bg-colo5-phone-gray h-[590px]  mt-14 left-52 w-[286px] rounded-[34px] z-0 border-2 border-black shadow-xl  shadow-black">
-            <div className="h-12 bg-black rounded-t-[34px]"></div>
-            <nav className="flex justify-between p-2 items-center">
-              <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
-              <ul className="flex gap-6">
-                <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
-                  <BsThreeDotsVertical />
-                </li>
-              </ul>
-            </nav>
-            <nav>
-              <ul className="flex justify-between items-center w-full">
-                <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
-                  Acerca del museo
-                </li>
-                <li className="text-colo6-phone-oringe text-sm w-1/2 text-center m-auto">
-                  Recorrido
-                </li>
-              </ul>
-            </nav>
-
-            <div className="my-2 mb-2 px-1 flex  h-[200px] relative bg-opacity-60 z-50">
-              <img className="" src={fondo}  alt="" />
-            </div>
-
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">Bienvenido </h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">Ingreso</h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">Jardin</h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">
-                Breve historia del edificio
-              </h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">
-                Arquitectura del edificio y jardines
-              </h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">Hall de entrada</h4>
-            </div>
-
-            <div className="h-14 bg-black rounded-b-[34px] w-"></div>
-          </div>
-
-        </div>
-        <div className=" flex items-center text-3xl">
-          <BsArrowRightSquareFill />
-        </div>
-        
-        <div className="relative ">
-          <div className="bg-colo5-phone-gray h-[590px]  mt-14 left-52 w-[286px] rounded-[34px] z-0 border-2 border-black shadow-xl  shadow-black">
-            <div className="h-12 bg-black rounded-t-[34px]"></div>
-            <nav className="flex justify-between p-2 items-center">
-              <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
-              <ul className="flex gap-6">
-                <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
-                  <BsThreeDotsVertical />
-                </li>
-              </ul>
-            </nav>
-            <nav>
-              <ul className="flex justify-between items-center">
-                <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
-                  Acerca del museo
-                </li>
-                <li className="text-colo6-phone-oringe text-sm w-1/2 text-center m-auto">
-                  Recorrido
-                </li>
-              </ul>
-            </nav>
-
-            <div className=" mb-2 px-1 flex  h-20 overflow-hidden relative bg-opacity-60 ">
-              <img
-                className="h-[200px]"
-                src={fondo}
-                width={660}
-                height={410}
-                alt=""
-              />
-            </div>
-
-            <div className="mx-2 bg-emerald-400 mb-2 h-[300px] flex flex-col   rounded-lg">
-              <h4 className="text-white text-xs text-center w-full my-2">
-                Bienvenido{" "}
-              </h4>
-              <img
-                className="bg-white h-20"
-                src={fondo}
-                width={660}
-                height={210}
-                alt=""
-              />
-              <div className=" flex justify-around  w-full my-2">
-                <audio className="bg-emerald-400 " controls>
-                  <source src="https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Museos%2FMUNTREF_Inmigraci%C3%B3n%2FInglesVersion%2F1%20welcome.mp3?alt=media&token=f5df399b-e077-4979-bc71-82341599d34f" />
-                </audio>
-              </div>
-              <p className="text-white text-xs mx-2 text-justify">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Error
-                totam odio consectetur magni eos neque dolorem delectus porro
-                nostrum accusantium quaerat, obcaecati, tempore qui culpa
-                necessitatibus quis harum alias quisquam!
-              </p>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-7 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">Ingreso</h4>
-            </div>
-
-            <div className="h-14 bg-black rounded-b-[34px] "></div>
-          </div>
-          
-        </div>
-         */}
         
         
       </section>}

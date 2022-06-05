@@ -14,7 +14,7 @@ import {
   import {
     AiOutlineBank,
     AiFillMediumSquare,
-    AiOutlineUpSquare,
+    AiOutlineUpSquare,AiOutlineDelete
   } from "react-icons/ai";
   import {
     BsFileText,
@@ -26,25 +26,32 @@ import {IoMdArrowDropdown,IoMdArrowDropup} from 'react-icons/io'
 
 import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { update360Panorama, updateBienvenidaLayer } from '../../../firebase';
+import { createLayer, createPanorama, deleteLayer, deletePan, update360Panorama, updateBienvenidaLayer } from '../../../firebase';
 import { obtenerBienvenido } from '../../../features/bienvenido/bienvenidoSlice';
 
 import { obtenerMuseo } from '../../../features/museo/museoSlice';
 import { obtenerPanoramas } from '../../../features/360/360Slice';
 import NavBar from '../../../components/NavBar';
-
-
+import { storage } from '../../../firebase';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 
 export default function Bienvenido({idMuseo}) {
-    const [open,setOpen] = useState(false)
-    const [open2,setOpen2] = useState(true)
-    const [openpan,setOpenpan] = useState(false)
+  const [open,setOpen] = useState(false)
+  const [open2,setOpen2] = useState(true)
+  const [openpan,setOpenpan] = useState(false)
+  const [urlFile,setUrlFile] = useState()
+  const [progress,setProgress]=useState()
+
+  
   const [layer,setLayer] = useState({})
-  const [formu,setFormu] = useState({})
+  const [name,setName]=useState()
+  
   const [pan,setPan] = useState({
     id:"",
     panorama:""
   })
+  const [panoramas2,setPanoramas2] = useState([])
+
   
   const objetoIdMuseo = useParams(idMuseo)
   const id = objetoIdMuseo.idMuseo
@@ -58,24 +65,7 @@ export default function Bienvenido({idMuseo}) {
   const editarLayer =async (e)=>{
     e.preventDefault()
     const {audiolayer,es360,imglayer,end,nombrelayer,textolayer,textolayer2,textolayer3,textolayer4,textolayer5,titulolayer,idLayer}=e.target
-    const layerEditada = {audiolayer:audiolayer.value,es360:es360.value,imglayer:imglayer.value,nombrelayer:nombrelayer.value,
-      
-      textolayer:textolayer.value,
-      textolayer2:textolayer2.value,
-      textolayer3:textolayer3.value,
-      textolayer4:textolayer4.value,
-      textolayer5:textolayer5.value,
-      titulolayer:titulolayer.value
-
-    }
-  
-    
-
-    
-    await updateBienvenidaLayer(id,idLayer.value,layerEditada)
-    dispatch(obtenerBienvenido(id))
-    setFormu({})
-    setLayer({
+    const layerEditada = {
       audiolayer:audiolayer.value,
       es360:es360.value,
       imglayer:imglayer.value,
@@ -85,9 +75,15 @@ export default function Bienvenido({idMuseo}) {
       textolayer3:textolayer3.value,
       textolayer4:textolayer4.value,
       textolayer5:textolayer5.value,
-      titulolayer:titulolayer.value,
-      id:idLayer.value
-    })
+      titulolayer:titulolayer.value
+
+    }
+
+    await updateBienvenidaLayer(id,idLayer.value,layerEditada)
+    dispatch(obtenerBienvenido(id))
+    const newLayer =layerEditada
+    newLayer.id=idLayer.value
+    setLayer(newLayer)
     // setOpen(false)
     // setOpen2(true)
     e.target.reset()
@@ -101,24 +97,154 @@ export default function Bienvenido({idMuseo}) {
     bienvenido.map((e)=>{
       if(e.id===id1){
         setLayer(e)
-        setFormu(e)
+        
         // setOpen2(false)
-        setOpen(!open)
+        setOpen(true)
         
       }
     })
   }
+  // const arrayPans =[]
+  // panoramas.map((p)=>{
+  //   const index =parseInt(p.id.substring(11))
+  //   arrayPans.push(index)
+    
+
+  // })
+  // console.log(arrayPans)
+  // console.log(Math.max(...arrayPans))
+
+
+
+  const crearLayer =()=>{
+    
+    if(bienvenido.length===0){
+      const idLayer=`1a_layer1`
+      createLayer(id,idLayer)
+      dispatch(obtenerBienvenido(id))
+      // setOpenpan(true)
+    }else{
+      const arrayLayer =[]
+      bienvenido.map((layer1)=>{
+        const index =parseInt(layer1.id.substring(8))
+        arrayLayer.push(index)
+        
+        
+
+      })
+      const index =Math.max(...arrayLayer)
+      console.log(arrayLayer)
+      const idLayer= `1a_layer${index+1}`
+      createLayer(id,idLayer)
+      dispatch(obtenerBienvenido(id))
+      // const idPan2 =`1a_panorama${index+1}`
+      // createPanorama(id,layer.id,idPan2)
+      
+      // const idLayer2=layer.id
+      // abrirPanoramas(id,idLayer2)
+      // setOpenpan(true)
+
+  }
+
+  }
+  const eliminarLayer=(idLayer)=>{
+    console.log(idLayer)
+    deleteLayer(id,idLayer)
+    dispatch(obtenerBienvenido(id))
+  }
+  const crearPanorama=()=>{
+    if(panoramas.length===0){
+      const idPan=`1a_panorama1`
+      createPanorama(id,layer.id,idPan)
+      
+      const idLayer=layer.id
+      abrirPanoramas(id,idLayer)
+      setOpenpan(true)
+    }else{
+      const arrayPans =[]
+      panoramas.map((p)=>{
+        const index =parseInt(p.id.substring(11))
+        arrayPans.push(index)
+        
+
+      })
+      const index =Math.max(...arrayPans)
+      console.log(index)
+      const idPan2 =`1a_panorama${index+1}`
+      createPanorama(id,layer.id,idPan2)
+      
+      const idLayer2=layer.id
+      abrirPanoramas(id,idLayer2)
+      setOpenpan(true)
+
+  }
+    
+  }
+  const eliminarPanorama=(idPan)=>{
+    deletePan(id,layer.id,idPan)
+    const idLayer=layer.id
+    abrirPanoramas(id,idLayer)
+    setOpenpan(true)
+    
+  }
+
+
+  const subir =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    console.log(file)
+    uploadFiles(file)
+    
+    
+  }
+  
+  const uploadFiles =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...layer,...newObject}
+              console.log(objeto)
+                            
+              setLayer(objeto)
+              
+            })
+        }
+        )
+        
+        
+    
+  }
+
   const abrirPanoramas = (idMuseo,idLayer)=>{
     setOpenpan(true)
-    dispatch(obtenerPanoramas({ idMuseo, idLayer }));
+    
+    dispatch(obtenerPanoramas({ idMuseo, idLayer }))
+    
   }
+  
   const tomarPanorama = (id) => {
     console.log(id)
     console.log(panoramas)
     panoramas.map((e) => {
       if (e.id === id) {
         console.log("son iguales");
-        console.log(e)
+        
         setPan(e)
       }
     });
@@ -139,12 +265,19 @@ export default function Bienvenido({idMuseo}) {
       idPanorama.value,
       panoramaEditado
     );
-    setPan({
-      id:"",
-      panorama:""
-    })
+    setPan(panoramaEditado)
+    
     abrirPanoramas(id,idLayer.value)
+    // setOpenpan(true)
+    // dispatch(obtenerPanoramas({id,idLayer}))
+    // abrirPanoramas(id,idLayer.value)
+    // tomarPanorama(idPanorama)
+    // setPan({
+    //   id:"",
+    //   panorama:""
+    // })
     e.target.reset()
+    
     // dispatch(obtenerPanoramas({ id, idLayer1 }));
     // dispatch(obtenerMuseos())
     // console.log("se ejecuta")
@@ -157,6 +290,51 @@ export default function Bienvenido({idMuseo}) {
     id:"",
     panorama:""
   })
+  setUrlFile()
+  
+  }
+  const subirPan =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    // console.log(file)
+    uploadFilesPan(file)
+    
+    
+  }
+  
+  const uploadFilesPan =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            // setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              setUrlFile(url)
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...pan,...newObject}
+              console.log(objeto)
+                            
+              setPan(objeto)
+              
+              // update360Panorama(id,layer.id,pan.id,objeto)
+              
+            })
+        }
+        )
+        
+        
+    
   }
   const dispatch = useDispatch()
   useEffect(()=>{
@@ -173,20 +351,39 @@ export default function Bienvenido({idMuseo}) {
               <div className='flex flex-col justify-between bg-colo5-phone-gray w-4/5 h-5/6 relative rounded-lg '>
                  <div className='flex justify-center items-center mb-8'>
                     {panoramas.map((panorama)=>
-                 
+                    
                     <div className=' h-4/5  relative flex flex-col' >                     
                       <img className='border-[1px] h-[200px]' src={Object.values(panorama)[0]} alt="" />
                       
                       <h1 className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white '>{panorama.id}</h1>
                       <button onClick={()=>{tomarPanorama(panorama.id)}} className='absolute bottom-[-20px] right-0 bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
+                      <button onClick={(()=>{eliminarPanorama(panorama.id)})} className=" absolute top-0 right-0 text-red-500 mx-2">x</button>
+
                     </div>
                  
                   )}
+                  <button onClick={crearPanorama} className="text-white">Nuevo</button>
                   </div>  
+                  <div className='flex justify-around w-full gap-2 h-60 px-2 pb-2'>
+                    <form onSubmit={editarPanorama} className="flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full   rounded-lg" >
+                      
+                      <p className=' text-2xl text-white text-center font-semibold mt-3 w-96'>Modifica {pan.id} Subir archivo desde el ordenador</p>
+                      <div 
+                        className='contenedor2 w-60 overflow-auto rounded-lg '>
+                                    
+                                    <input type="hidden" className='w-[1400px]  text-xs py-2 ' name='panorama' defaultValue={urlFile} />
+                                    
+                                    <input type="hidden" name='idPanorama' defaultValue={pan.id} />
+                                    <input type="hidden" name='idLayer' defaultValue={layer.id} />
+                        </div>
+                      <input onChange={subirPan} onClick={()=>{setName("panorama")}} type="file" className='mx-auto w-40'  />
+                      <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300' >Subir {pan.id}</button>
+                    </form>
+                      
                   {pan&&<form  
                   onSubmit={editarPanorama}
-                   className=' m-auto flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center rounded-lg my-4'>
-                        <h2 className='text-2xl text-white text-center font-semibold mb-2 w-96 '>Modifica {pan.id}</h2>
+                   className='  flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center rounded-lg '>
+                        <h2 className='text-2xl text-white text-center font-semibold mb-2 w-96 '>Modifica {pan.id} mediante un url</h2>
                         
                         <div 
                         className='contenedor2 w-60 overflow-auto rounded-lg '
@@ -203,6 +400,7 @@ export default function Bienvenido({idMuseo}) {
                         <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar {pan.id}</button>
                 
                     </form>}
+                    </div>
                  <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={cerrarPan}>X</button>
                  
               </div>
@@ -235,18 +433,27 @@ export default function Bienvenido({idMuseo}) {
                     </li>
                 </ul>
                 </nav>
-
+                <div className='h-[430px] overflow-auto contenedor'>
                 <div className=" mb-2 px-1 flex  h-[200px] relative bg-opacity-60 z-50">
                   <Link to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe absolute top-4 left-4'><FaArrowLeft/></button></Link>
                   <img className="" src={museo.imgmuseo}  alt="" />
                 </div>
+                
                 {bienvenido.map((layer)=>
-                <div onClick={()=>{tomarLayer(layer.id)}} className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-sm">
+                <div   className="relative mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-sm">
                   
-                  <h4 className="text-white text-xs ">{layer.nombrelayer}</h4>
+                  <h4 className="text-white text-xs " onClick={()=>{tomarLayer(layer.id)}}>{layer.nombrelayer}</h4>
+                  <button className=' text-white'><IoMdArrowDropdown  onClick={()=>{tomarLayer(layer.id)}}/></button>
+                  <button className='text-white  absolute right-0 z-90 text-md hover:text-red-500 p-1' onClick={()=>{eliminarLayer(layer.id)}}><AiOutlineDelete/></button>
+                </div>
+                
+                )}
+                <div onClick={crearLayer} className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-sm  ">
+                  
+                  <h4 className="text-white text-xs hover:text-colo6-phone-oringe hover:text-shadow text-shadow-xl hover:shadow-white ">Nuevo</h4>
                   <button className=' text-white'><IoMdArrowDropdown/></button>
                 </div>
-                )}
+                </div>
                 
                 
 
@@ -368,7 +575,7 @@ export default function Bienvenido({idMuseo}) {
             
             </div>:<></>}
             
-            {layer?<form  onSubmit={editarLayer} className='w-2/4 flex flex-col '>
+            {layer&&<form  onSubmit={editarLayer} className='w-2/4 flex flex-col '>
                         <h2 className='text-3xl text-center w-full m-auto  text-white mt-6 '>Modifica a {layer.nombrelayer}</h2>
                         
                         <div className='h-[500px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black '>
@@ -378,15 +585,23 @@ export default function Bienvenido({idMuseo}) {
                                     <div className='flex flex-col gap-1'>
                                       <label className='text-white py-1 font-semibold' htmlFor="es360">Imagen 360</label>
                                       <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='es360' defaultValue={layer.es360}/>
+                                      
+                                        <input type="file" onChange={subir} onClick={()=>{setName("es360")}}  />
+                                        {!progress===100?<p className='text-white text-xl'>{progress}</p>:<></>}
+                                      
+                                      {/* <input type="file" onChange={()=>{subir("es360")}} /> */}
+                                      
                                     </div>
                                     <div className='flex flex-col gap-1'>
                                       <label className='text-white py-1 font-semibold' htmlFor="Audiolayer">Audio</label>
                                       <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='audiolayer' defaultValue={layer.audiolayer} />
+                                      <input type="file" onChange={subir} onClick={()=>{setName("audiolayer")}}  />
                                     </div>
                                     
                                     <div className='flex flex-col gap-1 '>
                                       <label className='text-white py-1 font-semibold'  htmlFor="imglayer">Imagen de {layer.nombrelayer}</label>
                                       <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imglayer' defaultValue={layer.imglayer}/>
+                                      <input type="file" onChange={subir} onClick={()=>{setName("imglayer")}}  />
                                     </div>
                                     <div className='flex flex-col gap-1'>
                                       <label className='text-white py-1 font-semibold' htmlFor="nombrelayer">Nombre de la sección</label>
@@ -433,7 +648,7 @@ export default function Bienvenido({idMuseo}) {
                         
                         <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar Layer</button>
                 
-                    </form>:<></>}
+                    </form>}
                 
             
         </section>

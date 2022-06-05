@@ -34,6 +34,7 @@ export default function NavBar() {
         // dispatch(obtenerUsuario())
          
     }
+    console.log(museo)
   return (
     <nav className=' flex   h-12 bg-colo7-phone-dark shadow '>
       <div className='flex  justify-between items-center max-w-7xl w-full m-auto  '>

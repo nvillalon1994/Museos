@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Page from '../../../components/Page'
 import { obtenerBienvenido } from '../../../features/bienvenido/bienvenidoSlice'
 import { obtenerRecorridos } from '../../../features/recorrido/recorridoSlice'
-import { updateRecorrido } from '../../../firebase'
+import { createRecorrido, deleteRecorrido, updateRecorrido } from '../../../firebase'
 import ReactAudioPlayer from 'react-audio-player';
 import {FaArrowLeft} from 'react-icons/fa'
 import {
@@ -25,9 +25,13 @@ import {
   } from "react-icons/bs";
 import {GoTriangleUp} from "react-icons/go"
 import { obtenerMuseo } from '../../../features/museo/museoSlice'
+import { storage } from '../../../firebase';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { text } from '@fortawesome/fontawesome-svg-core'
 
 export default function Recorrido({idMuseo}) {
   const [open,setOpen] = useState(false)
+  const [name,setName]=useState()
   const [recorrido,setrecorrido] = useState({})
   const objetoIdMuseo = useParams(idMuseo)
   const id = objetoIdMuseo.idMuseo
@@ -50,14 +54,16 @@ export default function Recorrido({idMuseo}) {
       colorreco4:colorreco4.value,
       colorreco5:colorreco5.value,
       imgreco:imgreco.value,
-      id:idrecorrido.value
+      
 
 
     }
     
     await updateRecorrido(id,idrecorrido.value,recorridoEditado)
     dispatch(obtenerRecorridos(id))
-    setrecorrido(recorridoEditado)   
+    const newRecorrido =recorridoEditado
+    newRecorrido.id=idrecorrido.value
+    setrecorrido(newRecorrido)   
     e.target.reset()
   }
   const tomarrecorrido = (id)=>{
@@ -70,7 +76,84 @@ export default function Recorrido({idMuseo}) {
       }
     })
   }
-  console.log(recorrido)
+  const subir =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    console.log(file)
+    uploadFiles(file)
+    
+    
+  }
+  
+  const uploadFiles =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            // setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...recorrido,...newObject}
+              console.log(objeto)
+                              
+              setrecorrido(objeto)
+              
+            })
+        }
+        )
+
+  }
+
+  const reemplazarCaracteres=(texto)=>{
+    texto =texto.split('')
+    for(let i = 0;i< texto.length;++i){
+      switch(texto[i]) {
+        case "z":
+          texto[i] ="a"
+          break;
+        case "Z":
+          texto[i] ="A"
+          break
+        default:
+          texto[i] = String.fromCharCode(texto[i].charCodeAt(0)+1)
+      }
+    }
+    return texto
+  }
+  // const letra = (recorridos[recorridos.length-1].id[1])
+  // const letrasiguiente = reemplazarCaracteres(letra)
+  // console.log(letra, letrasiguiente[0])
+  // console.log(reemplazarCaracteres("a"))
+  const crearRecorrido =(e)=>{
+    e.preventDefault()
+    const last = (recorridos[recorridos.length-1].id[1])
+    const letra = reemplazarCaracteres(last)
+    console.log(letra)
+    const {name}= e.target
+    console.log(name.value)
+    const idRecorrido = `1${letra}_${(name.value).toLowerCase()}`
+    console.log(idRecorrido)
+    createRecorrido(id,idRecorrido,name.value)
+    dispatch(obtenerRecorridos(id))
+  }
+  const eliminarRecorrido=(idRecorrido)=>{
+    deleteRecorrido(id,idRecorrido)
+    dispatch(obtenerRecorridos(id))
+  }
+
+  
   // console.log(recorrido)
   
   const dispatch = useDispatch()
@@ -85,8 +168,8 @@ export default function Recorrido({idMuseo}) {
       <section className='flex justify-around  '>
             
             {!open&&<div className="relative flex justify-between w-1/4 ">
-                <div className="bg-colo5-phone-gray relative h-[590px] m-auto  mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
-                    <div className="h-12 bg-black rounded-t-[34px] w-[285px]"></div>
+                <div className="bg-colo5-phone-gray relative h-[590px]  m-auto  mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
+                    <div className="h-12 bg-black rounded-t-[34px] w-[285px]  "></div>
                     <nav className="flex justify-between p-2 items-center">
                     <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
                     <ul className="flex gap-6">
@@ -105,16 +188,26 @@ export default function Recorrido({idMuseo}) {
                         </li>
                     </ul>
                     </nav>
-                    <h2 className='text-white text-xs mt-2 mb-6 mx-9'>{museo.nombre}</h2>
-                    <div className='grid grid-cols-2 gap-4 relative'>
-                    <Link className='absolute top-[-40px] left-2' to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe '><FaArrowLeft/></button></Link>
-                        {recorridos.map((recorrido)=>
-                        <div className='bg-emerald-400 mb-4 ' onClick={()=>{tomarrecorrido(recorrido.id)}}>
-                            <p className='text-center text-white'>{recorrido.nombrereco}</p>
-                            <img src={recorrido.imgreco} alt="" />
-                        </div>
-                        )}
+                    <div className='h-[424px] overflow-auto contenedor2 '>
+                      <h2 className='text-white text-xs mt-2 mb-6 mx-9'>{museo.nombre}</h2>
+                      <div className='grid grid-cols-2 gap-4 relative'>
+                      <Link className='absolute top-[-40px] left-2' to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe '><FaArrowLeft/></button></Link>
+                          {recorridos.map((recorrido)=>
+                          <div className='bg-emerald-400 mb-4 relative ' >
+                              <p className='text-center text-white'>{recorrido.nombrereco}</p>
+                              <img src={recorrido.imgreco} alt="" onClick={()=>{tomarrecorrido(recorrido.id)}} />
+                              <button className='text-white bg-red-500 text-sm absolute top-0 right-0 z-40' onClick={()=>{eliminarRecorrido(recorrido.id)}}>X</button>
+                          </div>
+                          )}
+                          <form onSubmit={crearRecorrido} className='bg-emerald-400 mb-4 ' >
+                              <input type="text" placeholder='Nombre del recorrido' className='w-32' name="name" /> 
+                              <button className='text-center text-white '>Nuevo Recorrido</button>
+                              
+                          </form>
+                          
+                      </div>
                     </div>
+                    
                     <div className="h-14 bg-black rounded-b-[34px] w-[286px] absolute bottom-0 z-70"></div>
                 </div>
 
@@ -183,6 +276,7 @@ export default function Recorrido({idMuseo}) {
                                 <div className='flex flex-col gap-1'>
                                     <label className='text-white  font-semibold' htmlFor="audioreco">Audio del Recorrido</label>
                                     <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='audioreco' defaultValue={recorrido.audioreco} />
+                                    <input type="file" onChange={subir} onClick={()=>{setName("audioreco")}}  />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label className='text-white  font-semibold' htmlFor="nombrereco">Nombre del Recorrido</label>
@@ -191,6 +285,7 @@ export default function Recorrido({idMuseo}) {
                                 <div className='flex flex-col gap-1'>
                                     <label className='text-white  font-semibold' htmlFor="imgreco">Imagen del Recorrido</label>
                                     <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgreco' defaultValue={recorrido.imgreco}/>
+                                    <input type="file" onChange={subir} onClick={()=>{setName("imgreco")}}  />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label className='text-white  font-semibold' htmlFor="colorreco">1° Parrafo</label>

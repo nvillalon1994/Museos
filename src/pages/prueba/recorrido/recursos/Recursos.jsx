@@ -63,13 +63,15 @@ export default function Tressesenta ({ids}) {
         recutextobottom4:recutextobottom4.value, 
         recutextobottom5:recutextobottom5.value,
         recuvid:recuvid.value,
-        id:idRecurso.value
+        
     }
     console.log(recursoEditado)
     // console.log(id,idRecorrido,idRecurso.value,recursoEditado)
     // console.log(recursoEditado)
     await updateRecurso(id,idRecorrido,idRecurso.value,recursoEditado)
     dispatch(obtenerRecursos({id,idRecorrido}))
+    const newRecurso =recursoEditado
+    newRecurso.id=idRecurso.value
     setRecurso(recursoEditado)
     // dispatch(obtenerMuseos())
     // console.log("se ejecuta")
@@ -139,7 +141,7 @@ export default function Tressesenta ({ids}) {
                     </ul>
                     </nav>
                     
-                    <div className='flex gap-2  flex-col  pb-4 mx-4 items-center '>
+                    <div className='flex gap-2  flex-col  pb-4 mx-2 items-center '>
                       {recursos.map((recurso)=>
                       <div className='w-full  bg-colo7-phone-dark py-2 '>
                         <div className=' flex justify-between w-full  text-white  rounded-md  px-1 ' onClick={()=>{tomarRecurso(recurso.id)}}>
