@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Page from '../../../components/Page'
 import { obtenerBienvenido } from '../../../features/bienvenido/bienvenidoSlice'
 import { obtenerMuntref_Links } from '../../../features/Muntref_Link/muntrefLink'
-import { updateBienvenidaLayer, updateLink, updateLinkmp } from '../../../firebase'
+import { createLink, createLinkmp, deleteLink, deleteLinkmp, updateBienvenidaLayer, updateLink, updateLinkmp } from '../../../firebase'
 import {
   BiLogOutCircle,
   BiWorld,
@@ -83,7 +83,7 @@ export default function Bienvenida({idMuseo}) {
     })
   }
   
-  console.log(linksmp)
+  // console.log(linksmp)
 
   const subir =(e)=>{
     e.preventDefault()
@@ -163,6 +163,55 @@ export default function Bienvenida({idMuseo}) {
   }
 
   // console.log(link)
+
+  const crearLink=()=>{
+    if(muntrefLinks.length===0){
+      const idLink = "1a_link1"
+      createLink(id,idLink)
+      dispatch(obtenerMuntref_Links(id))
+
+    }
+    else{
+      const a = muntrefLinks[muntrefLinks.length-1]
+      const index =parseInt(a.id.substring(7))
+      console.log(index)
+      const idLink = `1a_link${index+1}`
+      createLink(id,idLink)
+      dispatch(obtenerMuntref_Links(id))
+    }
+    // createLink()
+  }  
+  const eliminarLink=(idLink)=>{
+    deleteLink(id,idLink)
+    dispatch(obtenerMuntref_Links(id))
+  }  
+  
+
+  const crearLinkmp=()=>{
+    
+    const idLink = link.id
+    console.log(linksmp)
+    if(linksmp.length===0){
+      const idLinkmp = "1a_link1"
+      createLinkmp(id,idLink,idLinkmp)
+      dispatch(obtenerLinksmp({id,idLink}))
+    }else{
+      const a = linksmp[linksmp.length-1]
+      const index =parseInt(a.id.substring(7))
+      console.log(index)
+      const idLinkmp = `1a_link${index+1}`
+    //   console.log(index,idLinkmp)
+      createLinkmp(id,idLink,idLinkmp)
+      dispatch(obtenerLinksmp({id,idLink}))
+    }
+    
+  }
+  const eliminarLinkmp=(idLinkmp)=>{
+    const idLink = link.id
+    deleteLinkmp(id,idLink,idLinkmp)
+    dispatch(obtenerLinksmp({id,idLink}))
+  }  
+
   const dispatch = useDispatch()
   useEffect(()=>{
     dispatch(obtenerMuntref_Links(id))
@@ -175,11 +224,16 @@ export default function Bienvenida({idMuseo}) {
         {openlink&&<div className='absolute bg-black bg-opacity-70 h-screen w-full top-0 z-50 flex  items-center justify-center '>
           <div className='flex w-3/4 h-3/4 bg-colo5-phone-gray p-3 gap-10 '>
           <div className='  text-white w-2/3 grid grid-cols-2 gap-4 rounded-sm '>
-            {linksmp.map((linkmp)=><div className='bg-colo7-phone-dark  text-white  flex flex-col  p-2 max-h-40'>
+            {linksmp.map((linkmp)=><div className='bg-colo7-phone-dark  text-white  flex flex-col  p-2 max-h-40 relative'>
               <p className=''>ulinkmp:  <span className='font-bold'>{linkmp.ulinkmp}</span></p>
               <p className=''>ulinkmp:  <span className='font-bold'>{linkmp.urllinkmp}</span></p>
               <button className='bg-emerald-400 p-1  rounded' onClick={()=>tomarLinkmp(linkmp.id)}>modificar</button>
+              <button className='text-white bg-red-500 absolute top-0 right-0' onClick={()=>{eliminarLinkmp(linkmp.id)}}> X</button>
             </div>)}
+            
+              <button onClick={crearLinkmp}>nuevoa</button>
+              
+            
           </div>
           {linkmp&&
           <form  onSubmit={editarlinkmp} className='w-1/3 flex flex-col  '>
@@ -233,13 +287,14 @@ export default function Bienvenida({idMuseo}) {
                     <h1 className='bg-colo6-phone-oringe text-xs text-center text-white py-2 font-semibold '>RECORRIDO VIRTUAL DEL MUSEO 360°</h1>
                     <p className='text-xs text-red-900 text-justify m-1'>Ingresando aqui, podrás recorrer virtualmente el {museo.nombre}. En cada imagen podrás descubrir el entorno simplemente deslizando tu dedo en cualquier dirección, y podrás entrar en los hotspots que cada lugar ofrece.</p>
                     {muntrefLinks.map((link)=>
-                    <div className='relative w-full'onClick={()=>{tomarLink(link.id)}} >
+                    <div className='relative w-full relative'onClick={()=>{tomarLink(link.id)}} >
                       <img className='h-40' src={link.imglink} alt="" />
                       
                       <p className='absolute w-full bottom-0 bg-black text-white bg-opacity-80 text-center py-3'>{link.nombrelink}</p>
                       
-                     
+                     <button className='bg-red-500 text-white absolute right-0 top-0' onClick={()=>{eliminarLink(link.id)}}>X</button>
                     </div>)}
+                    <button className='' onClick={crearLink}>Nuevo</button>
                   </div>
                     
                   

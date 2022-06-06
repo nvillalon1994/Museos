@@ -76,7 +76,7 @@ export default function PhonePrueba({idMuseo}) {
         const museoEditado={descripcion:descripcion.value,direccion:direccion.value,horario:horario.value,imgmain:imgmain.value,imgmuseo:imgmuseo.value,logomuseo:logomuseo.value,nombre:nombre.value,organizacion:organizacion.value}
         console.log(museoEditado)
         await updateMuseum(museo.id,museoEditado)
-        dispatch(obtenerMuseos())
+        // dispatch(obtenerMuseos())
         console.log("se ejecuta")
         
         dispatch(obtenerMuseo(id))

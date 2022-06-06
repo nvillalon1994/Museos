@@ -25,12 +25,16 @@ import {GoTriangleUp} from "react-icons/go"
 import { obtenerMuseo } from '../../../../features/museo/museoSlice' 
 import ReactAudioPlayer from 'react-audio-player'
 import { obtenerObras } from '../../../../features/obras/obrasSlice'
-
+import { storage } from '../../../../firebase' 
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 
 // import { updateMuestra } from '../firebase'
 
 
 export default function Tressesenta ({ids}) {
+  const [urlFile,setUrlFile] = useState()
+  const [progress,setProgress]=useState()
+  const [name,setName]=useState()
   const [obra,setObra] = useState({
     id:"",
     urlObra:""
@@ -127,7 +131,7 @@ export default function Tressesenta ({ids}) {
     e.preventDefault();
     
     const { urlobra, idObra } = e.target;
-    
+    console.log(urlobra)
     const obraEditada = { 
       urlobra: urlobra.value 
     };
@@ -166,11 +170,6 @@ export default function Tressesenta ({ids}) {
   }
 
 
-
-
-  // const a = muestras[muestras.length-1]
-  // const index =parseInt(a.id.substring(10))
-  // console.log(index)
   const crearMuestra =(e)=>{
     e.preventDefault()
     const {name} = e.target
@@ -192,6 +191,92 @@ export default function Tressesenta ({ids}) {
     deleteMuestra(id,idRecorrido,idMuestra)
     dispatch(obtenerMuestras({id,idRecorrido}))
   }
+
+  const subir =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    console.log(file)
+    uploadFiles(file)
+    
+    
+  }
+  
+  const uploadFiles =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...muestra,...newObject}
+              console.log(objeto)
+                            
+              setMuestra(objeto)
+              
+            })
+        }
+        )
+        
+        
+    
+  }
+  const subirObra =(e)=>{
+    e.preventDefault()
+    
+    const file = e.target.files[0]
+    // console.log(file)
+    uploadFilesObra(file)
+    
+    
+  }
+  
+  const uploadFilesObra =(file)=>{
+    if(!file)return
+        const storageRef =ref(storage,`/files/${file.name}`)
+        const uploadTask= uploadBytesResumable(storageRef ,file)
+        uploadTask.on("state_changed",(snapshot)=>{
+            const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
+            // setProgress(prog)
+        },(err)=>console.log(err),
+        ()=>{
+            getDownloadURL(uploadTask.snapshot.ref)
+            .then((url)=>{
+              setUrlFile(url)
+              
+              const newObject ={
+                prop:url
+              }
+              newObject[name]= newObject["prop"]
+              delete newObject["prop"]
+              console.log(newObject)
+              const objeto={...obra,...newObject}
+              console.log(objeto)
+                            
+              setObra(objeto)
+              
+              // update360Panorama(id,layer.id,pan.id,objeto)
+              
+            })
+        }
+        )
+        
+        
+    
+  }
+
   useEffect(()=>{
     
     
@@ -221,10 +306,25 @@ export default function Tressesenta ({ids}) {
                  
                   )}
                   <p onClick={crearObra}>Crear obra</p>
-                  </div>  
-                  {obra&&<form  
-                  onSubmit={editarObra}
-                   className=' m-auto flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center rounded-lg my-4'>
+                  </div> 
+                  <div className='flex justify-around w-full gap-2 h-60 px-2 pb-2'>
+                  <form onSubmit={editarObra} className="flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full   rounded-lg" >
+                      
+                      <p className=' text-2xl text-white text-center font-semibold mt-3 w-96'>Modifica {obra.id} Subir archivo desde el ordenador</p>
+                      <div 
+                        className='contenedor2 w-60 overflow-auto rounded-lg '>
+                                    
+                                    <input type="text" className='w-[1400px]  text-xs py-2 ' name='urlobra' defaultValue={urlFile} />
+                                    
+                                    <input type="hidden" name='idObra' defaultValue={obra.id} />
+                                    {/* <input type="hidden" name='id' defaultValue={layer.id} /> */}
+                        </div>
+                      <input onChange={subirObra} onClick={()=>{setName("")}} type="file" className='mx-auto w-40'  />
+                      <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300' >Subir {obra.id}</button>
+                    </form>
+                    {obra&&<form  
+                      onSubmit={editarObra}
+                      className=' m-auto flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center rounded-lg mb-4'>
                         <h2 className='text-2xl text-white text-center font-semibold mb-2 w-96 '>Modifica {obra.id}</h2>
                         
                         <div 
@@ -242,6 +342,8 @@ export default function Tressesenta ({ids}) {
                         <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar {obra.id}</button> 
                 
                     </form>}
+                    </div> 
+                  
                  <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={cerrarPan}>X</button>
                  
               </div>
@@ -373,6 +475,7 @@ export default function Tressesenta ({ids}) {
                             <div className='flex flex-col gap-1'>
                                 <label className='text-white  font-semibold' htmlFor="audiObra">Audio de la obra</label>
                                 <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text"name='audioObra' defaultValue={muestra.audioobra} />
+                                <input type="file" onChange={subir} onClick={()=>{setName("audioobra")}}  />
                             </div>
                             
                             
@@ -399,6 +502,7 @@ export default function Tressesenta ({ids}) {
                             <div className='flex flex-col gap-1'>
                                 <label className='text-white  font-semibold' htmlFor="imgmuestra">Imagen de la muestra</label>
                                 <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text"name='imgmuestra' defaultValue={muestra.imgmuestra} />
+                                <input type="file" onChange={subir} onClick={()=>{setName("imgmuestra")}}  />
                             </div>
 
                             

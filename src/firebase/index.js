@@ -208,6 +208,67 @@ export async function deleteObra(id,idRecorrido,idMuestra,idObra){
     deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+'/obrasimg',idObra))
 }
 
+export async function createRecurso(id,idRecorrido,idRecurso,nombre){
+    const infoRecurso ={
+        recuimg:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
+        recutexto:"recutexto",
+        recutexto2:"recutexto2",
+        recutexto3:"recutexto3",
+        recutexto4:"recutexto4",
+        recutexto5:"recutexto5",
+        recutextobottom:"recutextobottom",
+        recutextobottom2:"recutextobottom2",
+        recutextobottom3:"recutextobottom3",
+        recutextobottom4:"recutextobottom4",
+        recutextobottom5:"recutextobottom5",
+        recutitulo:nombre,
+        recuvid:"recuvid"
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/recursos',idRecurso),infoRecurso)
+}
+export async function deleteRecurso(id,idRecorrido,idRecurso){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/recursos/",idRecurso))
+}
+
+
+export async function createLink(id,idLink){
+    const infoCollinks ={
+        desclink:"descklink",
+        imglink:"imglink",
+        nboton:"nboton",
+        nombrelink:"nombrelink",
+        textlink:"textlink",
+        textlink2:"textlink2",
+        textlink3:"textlink3",
+        textlink4:"textlink4",
+        textlink5:"textlink5",
+        urllink:"urllink"
+    }
+    const infoColLinksMP={
+        nlinkmp:"nlinkmp",
+        urllinkmp:"urllinkmp"
+
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link',idLink),infoCollinks)
+    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/'+idLink+'/linksmp',"1a_link1"),infoColLinksMP)
+}
+export async function deleteLink(id,idLink){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/muntref_link",idLink))
+}
+export async function createLinkmp(id,idLink,idLinkmp){
+    const infoColLinksMP={
+        nlinkmp:"nlinkmp",
+        urllinkmp:"urllinkmp"
+
+    }
+    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/'+idLink+'/linksmp',idLinkmp),infoColLinksMP)
+}
+export async function deleteLinkmp(id,idLink,idLinkmp){
+    deleteDoc(doc(db, "MuseosPrueba/"+id+"/muntref_link/"+idLink+"/linksmp",idLinkmp))
+}
+
+
+
 
 
 export async function createMuseums(id,info1,description){

@@ -23,7 +23,7 @@ import {MdKeyboardArrowDown,MdKeyboardArrowUp} from "react-icons/md"
 import { obtenerMuseo } from '../../../../features/museo/museoSlice' 
 
 import { obtenerRecursos } from '../../../../features/recursos/recursosSlice'
-import { updateRecurso } from '../../../../firebase'
+import { createRecurso, deleteRecurso, updateRecurso } from '../../../../firebase'
 
 
 
@@ -48,6 +48,9 @@ export default function Tressesenta ({ids}) {
   const editarRecurso =async (e)=>{
     e.preventDefault()
     const {idRecurso,recuimg,recutitulo,recutexto, recutexto2,recutexto3,recutexto4,recutexto5,recutextobottom, recutextobottom2,recutextobottom3,recutextobottom4,recutextobottom5,recuvid}=e.target
+    const youtubeLink = link1(recuvid.value)
+
+    
     const recursoEditado = {
         
         recuimg:recuimg.value,
@@ -62,7 +65,8 @@ export default function Tressesenta ({ids}) {
         recutextobottom3:recutextobottom3.value, 
         recutextobottom4:recutextobottom4.value, 
         recutextobottom5:recutextobottom5.value,
-        recuvid:recuvid.value,
+        // recuvid:recuvid.value,
+        recuvid:youtubeLink,
         
     }
     console.log(recursoEditado)
@@ -96,22 +100,46 @@ export default function Tressesenta ({ids}) {
     
     
     if(link.includes("&")){
-        console.log(link.indexOf("&"))
+        
         const codigo = link.slice(32,-(link.length-link.indexOf("&")))
         console.log(codigo)
         // const codigo1=codigo.slice(index,)
         // console.log(codigo1)
+        return codigo
 
     }
   }
   
+  const crearRecurso = (e)=>{
+    
+    e.preventDefault()
+    const {name} = e.target
+    if(recursos.length===0){
+      createRecurso(id,idRecorrido,"1a_recurso1",name.value) 
+      dispatch(obtenerRecursos({id,idRecorrido}))
+      
+    }
+    else{
+      const a = recursos[recursos.length-1]
+      const index =parseInt(a.id.substring(10))
+      console.log(name.value,index)
+      
+      createRecurso(id,idRecorrido,`1a_recurso${index+1}`,name.value)
+      dispatch(obtenerRecursos({id,idRecorrido}))
+    }
+    
+  }
+  const eliminarRecurso =(idRecurso)=>{
+    deleteRecurso(id,idRecorrido,idRecurso)
+    dispatch(obtenerRecursos({id,idRecorrido}))
+  }
   
   
 
 
   useEffect(()=>{
     
-    
+    dispatch(obtenerMuseo(id))
     dispatch(obtenerRecursos({id,idRecorrido}))
     
 },[dispatch])
@@ -143,14 +171,20 @@ export default function Tressesenta ({ids}) {
                     
                     <div className='flex gap-2  flex-col  pb-4 mx-2 items-center '>
                       {recursos.map((recurso)=>
-                      <div className='w-full  bg-colo7-phone-dark py-2 '>
-                        <div className=' flex justify-between w-full  text-white  rounded-md  px-1 ' onClick={()=>{tomarRecurso(recurso.id)}}>
+                      <div className='w-full  bg-colo7-phone-dark py-2 flex '>
+                        <div className=' flex justify-between w-full  text-white  rounded-md  px-1 relative' onClick={()=>{tomarRecurso(recurso.id)}}>
                           <p className='text-xs pt-[3px] pb-1'>{recurso.recutitulo}</p>
-                          <button className='text-colo5-phone-gray' ><MdKeyboardArrowDown/></button>
+                          
+                          <button className='text-colo5-phone-gray ' ><MdKeyboardArrowDown/></button>
+                          
                         </div>
-                        
+                        <button className='text-white bg-red-500 px-1 w-1/6 ml-4 ' onClick={()=>{eliminarRecurso(recurso.id)}}>X</button>
                       </div>
                       )}
+                      <form action="" onSubmit={crearRecurso}>
+                        <input type="text" placeholder='Nombre del recurso' name="name" />
+                        <button>Nuevo Recurso</button>
+                      </form>
                       
                     </div>
                     
@@ -177,11 +211,11 @@ export default function Tressesenta ({ids}) {
                     </ul>
                     </nav>
                     
-                    <div className='flex flex-col gap-2  bg-colo7-phone-dark pb-4 mx-2 py-2'>
+                    <div className='flex flex-col gap-2  bg-colo7-phone-dark pb-4 mx-2 py-2' onClick={()=>{setOpen(false)}}>
                       
                       <div className=' flex justify-between  text-white w-full  rounded-md px-1 '>
                         <p className='text-xs pt-[3px] pb-1 '>{recurso.recutitulo}</p>
-                        <button className='text-cyan-600' onClick={()=>{tomarRecurso(recurso.id)}}><MdKeyboardArrowUp/></button>
+                        <button className='text-cyan-600' onClick={()=>{setOpen(false)}}><MdKeyboardArrowUp/></button>
                       </div>
 
                       <iframe className=" m-auto" width="260" height="146" src={"https://www.youtube.com/embed/"+recurso.recuvid} title="YouTube video player" frameBorder="0"  ></iframe>
@@ -216,7 +250,7 @@ export default function Tressesenta ({ids}) {
                                   <input type="hidden"name='idRecurso' value={recurso.id} />
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="audiObra">Codigo de Youtube</label>
-                                  <input type="text" name='recuvid' value={recurso.recuvid} />
+                                  <input type="text" name='recuvid' defaultValue={recurso.recuvid} />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="audiObra">Imagen</label>
