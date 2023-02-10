@@ -18,6 +18,7 @@ import {
   BsThreeDotsVertical,
   BsArrowRightSquareFill,
 } from "react-icons/bs";
+import {FaArrowLeft} from 'react-icons/fa'
 import { RiHome2Line } from "react-icons/ri";
 import { HiOutlineMail } from "react-icons/hi";
 import Page from "../../components/Page";
@@ -65,6 +66,7 @@ export default function PhonePrueba({idMuseo}) {
     
     const dispatch = useDispatch()
     const {museos} = useSelector(state=>state.museos)
+    const {museosCol} = useSelector(state=>state.museos)
     const {highlights} = useSelector(state=>state.highlights)
     
     const {usuario} = useSelector(state=>state.usuario)
@@ -75,14 +77,14 @@ export default function PhonePrueba({idMuseo}) {
         const {acerca,descripcion,direccion,horario,imgmain,imgmuseo,logomuseo,nombre,organizacion,reco,tressesenta}=e.target
         const museoEditado={descripcion:descripcion.value,direccion:direccion.value,horario:horario.value,imgmain:imgmain.value,imgmuseo:imgmuseo.value,logomuseo:logomuseo.value,nombre:nombre.value,organizacion:organizacion.value}
         console.log(museoEditado)
-        await updateMuseum(museo.id,museoEditado)
+        await updateMuseum(museo.id,museoEditado,museosCol)
         // dispatch(obtenerMuseos())
         console.log("se ejecuta")
         
         dispatch(obtenerMuseo(id))
-      }
+    }
 
-      const subir =(e)=>{
+    const subir =(e)=>{
         e.preventDefault()
         
         const file = e.target.files[0]
@@ -90,11 +92,11 @@ export default function PhonePrueba({idMuseo}) {
         uploadFiles(file)
         
         
-      }
+    }
       
-      const uploadFiles =(file)=>{
+    const uploadFiles =(file)=>{
         if(!file)return
-            const storageRef =ref(storage,`/files/${file.name}`)
+            const storageRef =ref(storage,`/NewStorage/Museos/${museo.nombre}/${file.name}`)
             const uploadTask= uploadBytesResumable(storageRef ,file)
             uploadTask.on("state_changed",(snapshot)=>{
                 const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -114,7 +116,7 @@ export default function PhonePrueba({idMuseo}) {
                   const objeto={...museo,...newObject}
                   console.log(objeto)
 
-                  updateMuseum(museo.id,objeto)
+                  updateMuseum(museo.id,objeto,museosCol)
                   dispatch(obtenerMuseo(id))        
                   
                   
@@ -124,7 +126,7 @@ export default function PhonePrueba({idMuseo}) {
             
             
         
-      }
+    }
     const tomarHigh=(id)=>{
       highlights.map((e)=>{
         if(e.id===id){
@@ -133,35 +135,35 @@ export default function PhonePrueba({idMuseo}) {
       })
 
     }
-    const editarBanner=async(e)=>{
-      e.preventDefault()
-    const {idBanner, htext1,htext2,urlhighlight}=e.target
-    const bannerEditado = {
-      htext1:htext1.value,
-      htext2:htext2.value,
-      urlhighlight:urlhighlight.value,
+    // const editarBanner=async(e)=>{
+    //   e.preventDefault()
+    // const {idBanner, htext1,htext2,urlhighlight}=e.target
+    // const bannerEditado = {
+    //   htext1:htext1.value,
+    //   htext2:htext2.value,
+    //   urlhighlight:urlhighlight.value,
       
       
      
-    }
+    // }
     
-    await updateHighlight(idBanner.value,bannerEditado)
-    dispatch(obtenerHighlights())
-    const newBanner =bannerEditado
-    newBanner.id=idBanner.value
+    // await updateHighlight(idBanner.value,bannerEditado)
+    // dispatch(obtenerHighlights())
+    // const newBanner =bannerEditado
+    // newBanner.id=idBanner.value
     
-    setBanner(
-      newBanner
-    )
+    // setBanner(
+    //   newBanner
+    // )
     
-    // setOpen(false)
-    // setOpen2(true)
-    e.target.reset()
+    // // setOpen(false)
+    // // setOpen2(true)
+    // e.target.reset()
     
     
     
   
-    }
+    // }
     console.log(museo)
     useEffect(()=>{
         dispatch(obtenerMuseos())
@@ -179,13 +181,13 @@ export default function PhonePrueba({idMuseo}) {
       {open&&
       <div className="absolute bg-black bg-opacity-70 h-screen w-full top-0 z-10 flex flex-col items-center justify-center " >
         <div className='flex justify-between bg-colo5-phone-gray w-4/5 h-[660px] overflow-auto contenedor relative rounded-lg '>
-          <div className="p-2">
+          {/* <div className="p-2">
             {highlights.map((high)=><div className="flex flex-col my-2"  onClick={()=>{tomarHigh(high.id)}}>
               <img className="w-[300px]" src={high.urlhighlight} alt="" />
             </div>)}
-          </div>
+          </div> */}
           
-          {banner&&<form onSubmit={editarBanner} action="" className='w-1/3 flex flex-col fixed right-60 top-0'>
+          {/* {banner&&<form onSubmit={editarBanner} action="" className='w-1/3 flex flex-col fixed right-60 top-0'>
           <h2 className='text-3xl text-center w-full m-auto  text-white my-6'>Modifica a {banner.id}</h2>
                         
                          <div className='h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
@@ -209,7 +211,7 @@ export default function PhonePrueba({idMuseo}) {
                         </div>
                         
                         <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'>Actualizar Banner</button> 
-          </form>}
+          </form>} */}
         <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={()=>{setOpen(false)}}>X</button>
         </div>
       </div>}
@@ -237,18 +239,18 @@ export default function PhonePrueba({idMuseo}) {
             <nav className="flex justify-between p-2 items-center">
               <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
               <ul className="flex gap-6">
-                <li className="text-colo6-phone-oringe text-lg">
+                {/* <li className="text-colo6-phone-oringe text-lg">
                   <BiWorld />
                 </li>
                 <li className="text-colo6-phone-oringe text-lg">
                   <HiOutlineMail />
-                </li>
+                </li> */}
                 <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
                   <BsThreeDotsVertical />
                 </li>
               </ul>
             </nav>
-            <nav className="w-full flex ">
+            {/* <nav className="w-full flex ">
               <ul className="flex justify-between  w-full ">
                 <li className="text-colo6-phone-oringe text-2xl w-1/4  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
                   <RiHome2Line className="m-auto mb-1" />
@@ -263,10 +265,10 @@ export default function PhonePrueba({idMuseo}) {
                   <AiOutlineUpSquare className="m-auto" />
                 </li>
               </ul>
-            </nav>
-            <div className="mt-1 mb-2 px-2 relative  ">
-              <button className="absolute bottom-0 right-2 text-white p-2 text-sm bg-opacity-80 bg-emerald-400 rounded z-30" onClick={()=>{setOpen(!open)}}>Mofidicar Highlights</button>
-              {/* <EmblaCarousel slides={highlights}/> */}
+            </nav> */}
+            {/* <div className="mt-1 mb-2 px-2 relative h-36 ">
+              <button className="absolute bottom-0 right-2 text-white p-2 text-sm bg-opacity-80 bg-emerald-400 rounded z-30" onClick={()=>{setOpen(!open)}}>Modificar Highlights</button>
+              
               <Carousel showArrows={true}  showStatus={false} showIndicators={false}  showThumbs={false} swipeable={true} infiniteLoop={true} autoPlay={true} transitionTime={1000} interval={2000}>
                 {highlights.map((high)=><div>
                   <img src={high.urlhighlight} alt="" />
@@ -274,18 +276,35 @@ export default function PhonePrueba({idMuseo}) {
               </Carousel>
                 
               
+            </div> */}
+            <div className="max-h-10">
+              <Link to={"/home"}> 
+                <FaArrowLeft className="text-orange-400 m-4" />
+              </Link>
+              
             </div>
-            <div className="mt-1  flex items-center  h-[160px] relative bg-opacity-60 z-50">
-              <div className="absolute flex justify-between  gap-2  w-full px-3 bottom-2  z-20 ">
-              <Link className="bg-emerald-400 bg-opacity-85 text-white text-[9px] flex items-center  rounded-md h-9 w-1/3"   to={"/"+ id +"/Bienvenido"}> 
+            <div className="">
+              
+              <img className=" border-2  w-[275px] h-[152px] mx-auto " src={museo.imgmuseo}  alt="" />
+            </div>
+            <div className="h-[200px]">
+              <p className="text-sm text-white text-bold text-center">{museo.nombre}</p>
+              <p className="text-sm text-white">{museo.descripcion}</p>
+              <p className="text-sm text-white">Dirección: {museo.direccion}</p>
+              <p className="text-sm text-white">Horario: {museo.horario}</p>
+              
+            </div>
+            <div className="mt-1  flex items-center   pb-8 relative bg-opacity-60 z-50">
+              <div className=" flex justify-between  gap-2  w-full px-3 bottom-2  z-20 ">
+              <Link className={"bg-emerald-400 bg-opacity-85 text-white text-[9px] flex items-center  rounded-md h-9 w-[100%]"}   to={"/"+ id +"/Bienvenido"}> 
                 <button className=" text-center w-full">Acerca del Museo</button>
               </Link>
-              <Link className="bg-colo6-phone-oringe bg-opacity-80 text-white text-[9px] flex items-center  rounded-md h-9 w-1/3"   to={"/"+ id +"/Recorrido"}> 
+              <Link className="bg-colo6-phone-oringe bg-opacity-80 text-white text-[9px] flex items-center  rounded-md h-9 w-[100%]"   to={"/"+ id +"/Recorrido"}> 
                 <button className=" text-center w-full ">Recorrido</button>
               </Link>
-              <Link className="bg-red-600 bg-opacity-85 text-white text-[9px] flex items-center  rounded-md h-9 w-1/3"   to={"/"+ id +"/MuntrefLink"}> 
+              {museo.tressesenta&&<Link className="bg-red-600 bg-opacity-85 text-white text-[9px] flex items-center  rounded-md h-9 w-[100%]"   to={"/"+ id +"/MuntrefLink"}> 
                 <button className=" text-center w-full ">Recorrido Virtual</button>
-              </Link>
+              </Link>}
 
                 {/* <button className=" bg-colo6-phone-oringe bg-opacity-85 text-white text-[9px] rounded-md h-10 w-1/3">
                   
@@ -297,10 +316,9 @@ export default function PhonePrueba({idMuseo}) {
               </div>
 
               {/* <img className=" border-2 border-emerald-400 w-[275px] h-[152px] m-auto " src={fondo}  alt="" /> */}
-              <img className=" border-2 border-emerald-400 w-[275px] h-[152px] m-auto " src={museo.imgmain}  alt="" />
               
             </div>
-            <div className="mx-2 bg-black mt-2 h-12 flex items-center gap-10 rounded-lg">
+            {/* <div className="mx-2 bg-black mt-2 h-12 flex items-center gap-10 rounded-lg">
               <AiOutlineUpSquare className="text-colo6-phone-oringe text-3xl ml-10 " />
               <h4 className="text-white text-sm">Modo Museo</h4>
             </div>
@@ -308,7 +326,7 @@ export default function PhonePrueba({idMuseo}) {
               <h4 className="text-white text-xs m-auto">
                 Reservá tu visita al museo
               </h4>
-            </div>
+            </div> */}
             
             <div className="h-12  bg-black rounded-b-[34px] w-[285px]"></div>
           </div>

@@ -1,32 +1,10 @@
 
 const credentials = {
     
-    // apiKey: "AIzaSyCA0-aenEQq2DxM_E4ktccPJRCb5iKYjBg",
-    // authDomain: "pepperland-ecommerce.firebaseapp.com",
-    // projectId: "pepperland-ecommerce",
-    // storageBucket: "pepperland-ecommerce.appspot.com",
-    // messagingSenderId: "173761101230",
-    // appId: "1:173761101230:web:cd459d9d47e552f04f9c3f"
-    
-    apiKey: "AIzaSyDz5Ah2lmqW9LUL2XbA4PDKuBlm508ALB4",
-  authDomain: "museopruba.firebaseapp.com",
-  projectId: "museopruba",
-  storageBucket: "museopruba.appspot.com",
-  messagingSenderId: "649569057494",
-  appId: "1:649569057494:web:d9a97d053a40ebe5ea2777"
-    // apiKey: "AIzaSyB2lBrw6kPRVr3bPH3YEgxXfSaFeJpvurI",
-    // authDomain: "auth-c0496.firebaseapp.com",
-    // projectId: "auth-c0496",
-    // storageBucket: "auth-c0496.appspot.com",
-    // messagingSenderId: "236697747953",
-    // appId: "1:236697747953:web:251cef366d4c801836c450"
 
-    // apiKey: "AIzaSyAjhbXb2erHbd-rH6hMU5p5wkjMnbT1_AY",
-    // authDomain: "aaaa-3d81f.firebaseapp.com",
-    // projectId: "aaaa-3d81f",
-    // storageBucket: "aaaa-3d81f.appspot.com",
-    // messagingSenderId: "46741906697",
-    // appId: "1:46741906697:web:5a67b35e53f71c81385fd8"
+
+
+    // PRUEBA CON LA COPIA DE LA BASE DE CARGA 
 
     // apiKey: "AIzaSyCKI2LVhNoR45GqgiYxy28ob2AxOFaJ-IA",
     // authDomain: "ecommerce-pepperland-a32ba.firebaseapp.com",
@@ -34,6 +12,17 @@ const credentials = {
     // storageBucket: "ecommerce-pepperland-a32ba.appspot.com",
     // messagingSenderId: "876781830016",
     // appId: "1:876781830016:web:855659b78f4894b796cb65"
+
+    //BASE DE DATOS REAL
+    apiKey: "AIzaSyA5Hp08c-JZQOtqBNGAu1IxcaiZd58Q-y8",
+    authDomain: "museum-view-test.firebaseapp.com",
+    databaseURL: "https://museum-view-test.firebaseio.com",
+    projectId: "museum-view-test",
+    storageBucket: "museum-view-test.appspot.com",
+    messagingSenderId: "556274626689",
+    appId: "1:556274626689:web:f168e62b0617539c079d80",
+    measurementId: "G-YX798Y2RF0"
+
 }
 
 export default credentials

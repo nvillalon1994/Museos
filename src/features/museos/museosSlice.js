@@ -5,12 +5,15 @@ import { getMuseums } from "../../firebase"
 
 const initialState ={
     museos:[],
-    loading:false
+    loading:false,
+    museosCol:"museos",
+    highCol:"highlight"
 }
 
-export const obtenerMuseos = createAsyncThunk("museos", async ()=>{
-    const museos = await getMuseums()
-    return museos
+export const obtenerMuseos = createAsyncThunk("museos", async (museosCol)=>{
+    console.log(museosCol)
+    const museos = await getMuseums(museosCol)
+    return {museos,museosCol}
 })
 
 
@@ -21,8 +24,16 @@ const museosSlice = createSlice({
         builder.addCase(obtenerMuseos.pending,(state)=>{
             state.loading = true
         }).addCase(obtenerMuseos.fulfilled,(state,action)=>{
-            state.museos = action.payload
+            console.log(action.payload.museosCol)
+            state.museos = action.payload.museos
             state.loading = false
+            state.museosCol= action.payload.museosCol
+            if(state.museosCol=="museos"){
+                state.highCol="highlight"
+            }else{
+                state.highCol="highlightE"
+            }
+
         })
     }
 })

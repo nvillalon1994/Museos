@@ -1,20 +1,22 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit"
 
-import {getLinkmp } from "../../firebase"
+import {getlinksmp } from "../../firebase"
 
 const initialState ={
     linksmp:[],
     loading:false
 }
 
-export const obtenerLinksmp = createAsyncThunk("linksmp", async (info)=>{
+export const obtenerLinksmp = createAsyncThunk("linksmp", async (info,thunkAPI)=>{
     
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
     
     const idMuseo = info.id
     
     const idLink = info.idLink
     console.log(idMuseo,idLink)
-    const linksmp = await getLinkmp(idMuseo,idLink)
+    const linksmp = await getlinksmp(idMuseo,idLink,museoscol)
     console.log(linksmp)
     
     return linksmp

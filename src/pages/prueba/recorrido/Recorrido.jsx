@@ -33,12 +33,18 @@ export default function Recorrido({idMuseo}) {
   const [open,setOpen] = useState(false)
   const [name,setName]=useState()
   const [recorrido,setrecorrido] = useState({})
+
+  const [delRecorridoModal,setDelRecorridoModal] = useState(false)
+  const [recorridoModal,setReacorridoModal]= useState({})
+
+
   const objetoIdMuseo = useParams(idMuseo)
   const id = objetoIdMuseo.idMuseo
   // console.log(id)
   
   const {recorridos} = useSelector(state=>state.recorridos)
   const {museo} = useSelector(state=>state.museo)
+  const {museosCol} = useSelector(state=>state.museos)
   console.log(recorridos)
   
 
@@ -59,22 +65,27 @@ export default function Recorrido({idMuseo}) {
 
     }
     
-    await updateRecorrido(id,idrecorrido.value,recorridoEditado)
+    await updateRecorrido(id,idrecorrido.value,recorridoEditado,museosCol)
     dispatch(obtenerRecorridos(id))
     const newRecorrido =recorridoEditado
     newRecorrido.id=idrecorrido.value
     setrecorrido(newRecorrido)   
     e.target.reset()
   }
-  const tomarrecorrido = (id)=>{
-      console.log(id)
-    recorridos.map((e)=>{
-      if(e.id===id){
-        
-        setrecorrido(e)
+  const tomarrecorrido = (recorrido)=>{
+      console.log(recorrido)
+      setrecorrido(recorrido)
+      setTimeout(() => {
         setOpen(true)
-      }
-    })
+      }, 1000);
+      
+    //   recorridos.map((e)=>{
+    //   if(e.id===id){
+        
+    //     setrecorrido(e)
+    //     setOpen(true)
+    //   }
+    // })
   }
   const subir =(e)=>{
     e.preventDefault()
@@ -88,7 +99,7 @@ export default function Recorrido({idMuseo}) {
   
   const uploadFiles =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`NewStorage/Museos/${museo.nombre}/Recorridos/${recorrido.id}/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -145,14 +156,21 @@ export default function Recorrido({idMuseo}) {
     console.log(name.value)
     const idRecorrido = `1${letra}_${(name.value).toLowerCase()}`
     console.log(idRecorrido)
-    createRecorrido(id,idRecorrido,name.value)
+    createRecorrido(id,idRecorrido,name.value,museosCol)
     dispatch(obtenerRecorridos(id))
   }
   const eliminarRecorrido=(idRecorrido)=>{
-    deleteRecorrido(id,idRecorrido)
+    console.log(idRecorrido, id)
+    deleteRecorrido(id,idRecorrido,museosCol)
     dispatch(obtenerRecorridos(id))
+    setDelRecorridoModal(false)
   }
-
+  const delRecorrido=(recorrido)=>{
+    
+    setDelRecorridoModal(true)
+    setReacorridoModal(recorrido)
+    
+  }
   
   // console.log(recorrido)
   
@@ -166,7 +184,22 @@ export default function Recorrido({idMuseo}) {
   return (
     <Page>
       <section className='flex justify-around  '>
+            {delRecorridoModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-[1000] bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {recorridoModal.id} ?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setDelRecorridoModal(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarRecorrido(recorridoModal.id)
+                  
+                }} >Eliminar</button>
+              </div>
+            </div>
             
+          </div>}
             {!open&&<div className="relative flex justify-between w-1/4 ">
                 <div className="bg-colo5-phone-gray relative h-[590px]  m-auto  mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
                     <div className="h-12 bg-black rounded-t-[34px] w-[285px]  "></div>
@@ -190,13 +223,13 @@ export default function Recorrido({idMuseo}) {
                     </nav>
                     <div className='h-[424px] overflow-auto contenedor2 '>
                       <h2 className='text-white text-xs mt-2 mb-6 mx-9'>{museo.nombre}</h2>
-                      <div className='grid grid-cols-2 gap-4 relative'>
+                      <div className='grid grid-cols-2 gap-2 relative'>
                       <Link className='absolute top-[-40px] left-2' to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe '><FaArrowLeft/></button></Link>
                           {recorridos.map((recorrido)=>
-                          <div className='bg-emerald-400 mb-4 relative ' >
+                          <div className='bg-emerald-400  relative h-[120px] overflow-hidden 'onClick={()=>{tomarrecorrido(recorrido)}} >
                               <p className='text-center text-white'>{recorrido.nombrereco}</p>
-                              <img src={recorrido.imgreco} alt="" onClick={()=>{tomarrecorrido(recorrido.id)}} />
-                              <button className='text-white bg-red-500 text-sm absolute top-0 right-0 z-40' onClick={()=>{eliminarRecorrido(recorrido.id)}}>X</button>
+                              <img className='' src={recorrido.imgreco} alt=""  />
+                              <button className='text-white bg-red-500 text-sm absolute top-0 right-0 z-40' onClick={()=>{delRecorrido(recorrido)}}>X</button>
                           </div>
                           )}
                           <form onSubmit={crearRecorrido} className='bg-emerald-400 mb-4 ' >
@@ -238,7 +271,10 @@ export default function Recorrido({idMuseo}) {
                     
                     <div className='relative h-[426px]'>
                     <button className='text-colo6-phone-oringe absolute top-4 left-4' onClick={()=>{setOpen(false)}}><FaArrowLeft/></button>
-                        <img src={recorrido.imgreco} alt="" />
+                        <div className='max-h-[200px] h-[200px] overflow-hidden flex relative '>
+                          
+                          <img className='absolute top-[-40px] ' src={recorrido.imgreco} alt="" />
+                        </div>
                         <div className=" flex justify-around  w-full my-1">
                             <ReactAudioPlayer
                             src={recorrido.audioreco}
@@ -247,8 +283,8 @@ export default function Recorrido({idMuseo}) {
                             style={{textEmphasisColor:"red"}}
                             />
                         </div>
-                        <div className='overflow-auto h-[132px] contenedor '>
-                            <p className='text-white font-semibold text-center text-sm my-4 '>{recorrido.nombrereco}</p>
+                        <div className='overflow-auto h-[120px] contenedor '>
+                            <p className='text-white font-semibold text-center text-sm my-2 '>{recorrido.nombrereco}</p>
                             <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco}</p>
                             <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco2}</p>
                             <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco3}</p>
@@ -269,7 +305,7 @@ export default function Recorrido({idMuseo}) {
                     <form  onSubmit={editarrecorrido} className='w-2/4 flex flex-col'>
                         <h2 className='text-3xl text-center w-full m-auto  text-white my-6'>Modifica a {recorrido.nombrereco}</h2>
                         
-                        <div className='h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
+                        <div className='h-[500px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
                             <div className='h-full  flex flex-col gap-12 mt-5 w-1/2 px-10'>
                                 
                                 <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="hidden" name='idrecorrido' defaultValue={recorrido.id} />

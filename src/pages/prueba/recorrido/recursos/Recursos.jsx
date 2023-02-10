@@ -39,10 +39,11 @@ export default function Tressesenta ({ids}) {
   const id=objeto.idMuseo
   
   const {recursos} = useSelector(state=>state.recursos)
+  const {museosCol} = useSelector(state=>state.museos)
   
   
-  
-  
+  const [modalDelRecurso,setModalDelRecurso] = useState(false)
+  const [modalRecurso,setModalRecurso] = useState({})
   
  
   const editarRecurso =async (e)=>{
@@ -72,11 +73,16 @@ export default function Tressesenta ({ids}) {
     console.log(recursoEditado)
     // console.log(id,idRecorrido,idRecurso.value,recursoEditado)
     // console.log(recursoEditado)
-    await updateRecurso(id,idRecorrido,idRecurso.value,recursoEditado)
+    await updateRecurso(id,idRecorrido,idRecurso.value,recursoEditado,museosCol)
     dispatch(obtenerRecursos({id,idRecorrido}))
     const newRecurso =recursoEditado
+    const obj = new Object
+    obj.recuvid= `https://www.youtube.com/watch?v=${youtubeLink}&t=3s`
+
     newRecurso.id=idRecurso.value
-    setRecurso(recursoEditado)
+    const recursoNew={...newRecurso,...obj}
+    console.log(recursoNew)
+    setRecurso(recursoNew)
     // dispatch(obtenerMuseos())
     // console.log("se ejecuta")
     
@@ -87,8 +93,15 @@ export default function Tressesenta ({ids}) {
   const tomarRecurso = (id)=>{
     recursos.map((e)=>{
       if(e.id===id){
-        console.log("son iguales")
-        setRecurso(e)
+        let link = new Object
+        link.recuvid=`https://www.youtube.com/watch?v=${e.recuvid}&t=3s`
+        console.log(link)
+        let link2={...e,...link}
+        console.log(link2)
+        
+        
+        
+        setRecurso(link2)
         setOpen(!open)
       }
     })
@@ -115,7 +128,7 @@ export default function Tressesenta ({ids}) {
     e.preventDefault()
     const {name} = e.target
     if(recursos.length===0){
-      createRecurso(id,idRecorrido,"1a_recurso1",name.value) 
+      createRecurso(id,idRecorrido,"1a_recurso1",name.value,museosCol) 
       dispatch(obtenerRecursos({id,idRecorrido}))
       
     }
@@ -124,14 +137,19 @@ export default function Tressesenta ({ids}) {
       const index =parseInt(a.id.substring(10))
       console.log(name.value,index)
       
-      createRecurso(id,idRecorrido,`1a_recurso${index+1}`,name.value)
+      createRecurso(id,idRecorrido,`1a_recurso${index+1}`,name.value,museosCol)
       dispatch(obtenerRecursos({id,idRecorrido}))
     }
     
   }
   const eliminarRecurso =(idRecurso)=>{
-    deleteRecurso(id,idRecorrido,idRecurso)
+    deleteRecurso(id,idRecorrido,idRecurso,museosCol)
     dispatch(obtenerRecursos({id,idRecorrido}))
+    setModalDelRecurso(false)
+  }
+  const borrarRecurso =(recurso)=>{
+    setModalRecurso(recurso)
+    setModalDelRecurso(true)
   }
   
   
@@ -147,7 +165,21 @@ export default function Tressesenta ({ids}) {
   
   return (
     <Page>
-      
+      {modalDelRecurso&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalRecurso.recutitulo}?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setModalDelRecurso(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarRecurso(modalRecurso.id)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
         
       <section className='flex justify-around'>
               {!open&&<div className="relative flex justify-between w-1/4 ">
@@ -178,7 +210,7 @@ export default function Tressesenta ({ids}) {
                           <button className='text-colo5-phone-gray ' ><MdKeyboardArrowDown/></button>
                           
                         </div>
-                        <button className='text-white bg-red-500 px-1 w-1/6 ml-4 ' onClick={()=>{eliminarRecurso(recurso.id)}}>X</button>
+                        <button className='text-white bg-red-500 px-1 w-1/6 ml-4 ' onClick={()=>{borrarRecurso(recurso)}}>X</button>
                       </div>
                       )}
                       <form action="" onSubmit={crearRecurso}>
@@ -218,7 +250,7 @@ export default function Tressesenta ({ids}) {
                         <button className='text-cyan-600' onClick={()=>{setOpen(false)}}><MdKeyboardArrowUp/></button>
                       </div>
 
-                      <iframe className=" m-auto" width="260" height="146" src={"https://www.youtube.com/embed/"+recurso.recuvid} title="YouTube video player" frameBorder="0"  ></iframe>
+                      <iframe className=" m-auto" width="260" height="146" src={"https://www.youtube.com/embed/"+recurso.recuvid.slice(32,-(recurso.recuvid.length-recurso.recuvid.indexOf("&")))} title="YouTube video player" frameBorder="0"  ></iframe>
                       <div className='h-[220px] overflow-auto contenedor'>
                         <p className='text-sm text-justify mx-1 text-white' >{recurso.recutextobottom}</p>
                         <p className='text-sm text-justify mx-1 text-white'>{recurso.recutextobottom2}</p>
@@ -249,8 +281,8 @@ export default function Tressesenta ({ids}) {
                                     
                                   <input type="hidden"name='idRecurso' value={recurso.id} />
                                 <div className='flex flex-col gap-1'>
-                                  <label className='text-white  font-semibold' htmlFor="audiObra">Codigo de Youtube</label>
-                                  <input type="text" name='recuvid' defaultValue={recurso.recuvid} />
+                                  <label className='text-white  font-semibold' htmlFor="audiObra">Url de Youtube</label>
+                                  <input type="text" name='recuvid' defaultValue= {recurso.recuvid} />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                   <label className='text-white  font-semibold' htmlFor="audiObra">Imagen</label>

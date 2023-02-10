@@ -5,7 +5,7 @@ import Page from '../../../../components/Page'
 
 import { obtenerLinksmp } from '../../../../features/Linksmp/linksmpSlice'
 
-import { update360link, updateLinkmp } from '../../../../firebase'
+import { update360link, updateLinkmp, updatelinksmp } from '../../../../firebase'
 
 export default function Linkmp ({ids}) {
   const [open,setOpen] = useState(false)
@@ -30,7 +30,7 @@ export default function Linkmp ({ids}) {
     const linkEditado = {nlinkmp:nlinkmp.value,urllinkmp:urllinkmp.value}
 
     // console.log(linkEditado)
-    await updateLinkmp(idMuseo,idLink,idlink2.value,linkEditado)
+    await updatelinksmp(idMuseo,idLink,idlink2.value,linkEditado)
     dispatch(obtenerLinksmp({idMuseo,idLink}))
     
     setOpen(!open)

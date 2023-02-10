@@ -7,8 +7,11 @@ const initialState ={
     loading:false
 }
 
-export const obtenerMuntref_Links = createAsyncThunk("muntrefLinks", async (id)=>{
-    const muntrefLinks = await getMuntref_Link(id)
+export const obtenerMuntref_Links = createAsyncThunk("muntrefLinks", async (id,thunkAPI)=>{
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
+    
+    const muntrefLinks = await getMuntref_Link(id,museoscol)
     
     return muntrefLinks
 })

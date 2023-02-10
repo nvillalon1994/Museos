@@ -152,9 +152,9 @@ export default function Login() {
               </div>}
               
               <input type="submit" value={isRegistrando? "Registrar" : "Iniciar Sesión"} />
-              <button onClick={()=>{setIsRegistrando(!isRegistrando)}}>
+              {/* <button onClick={()=>{setIsRegistrando(!isRegistrando)}}>
             {isRegistrando? "Ya tengo una cuenta": "Quiero Registrarme"}
-        </button>
+        </button> */}
         {/* <button className='btn-Ingresar' onClick={logout}>Cerrar Sesión</button> */}
           </form>
         

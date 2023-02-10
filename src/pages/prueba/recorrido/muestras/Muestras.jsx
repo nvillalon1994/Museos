@@ -39,7 +39,13 @@ export default function Tressesenta ({ids}) {
     id:"",
     urlObra:""
   })
-  console.log(obra)
+  const [obraModal,setObraModal] = useState({})
+  const[modalDelObra,setModalDelObra]= useState(false)
+
+  const [modalDelMuestras,setModalDelMuestras] = useState(false)
+  const [muestraModal,setMuestraModal] = useState({})
+
+  
   const [open,setOpen] = useState(false)
   const [muestra,setMuestra] = useState({})
   const [open2,setOpen2] = useState(false)
@@ -53,10 +59,10 @@ export default function Tressesenta ({ids}) {
   const id=objeto.idMuseo
   console.log(id)
   
-  
+  const{museosCol}= useSelector(state=>state.museos)
   const {muestras} = useSelector(state=>state.muestras)
   const {obras} = useSelector(state=>state.obras)
-  
+  const {museo} = useSelector(state=>state.museo)
   
   
   
@@ -83,7 +89,7 @@ export default function Tressesenta ({ids}) {
     }
     console.log(muestraEditada)
     console.log(id,idRecorrido,idMuestra.value)
-    await updateMuesta(id,idRecorrido,idMuestra.value,muestraEditada)
+    await updateMuesta(id,idRecorrido,idMuestra.value,muestraEditada,museosCol)
     dispatch(obtenerMuestras({id,idRecorrido}))
     const newMuestra =muestraEditada
     newMuestra.id=idMuestra.value
@@ -138,7 +144,7 @@ export default function Tressesenta ({ids}) {
     
     console.log(obraEditada)
     
-    updateObra(id,idRecorrido,muestra.id,idObra.value,obraEditada);
+    updateObra(id,idRecorrido,muestra.id,idObra.value,obraEditada,museosCol);
     traerObras(muestra.id)
     
     e.target.reset()
@@ -147,7 +153,7 @@ export default function Tressesenta ({ids}) {
   const crearObra =()=>{
     if(obras.length===0){
       const idObra = `1a_obra1`
-      createObra(id,idRecorrido,muestra.id,idObra)
+      createObra(id,idRecorrido,muestra.id,idObra,museosCol)
       const idMuestra = muestra.id
       dispatch(obtenerObras({id,idRecorrido,idMuestra}))
       traerObras(idMuestra)
@@ -156,7 +162,7 @@ export default function Tressesenta ({ids}) {
       const index =parseInt(a.id.substring(7))
       console.log(index)
       const idObra = `1a_obra${index+1}`
-      createObra(id,idRecorrido,muestra.id,idObra)
+      createObra(id,idRecorrido,muestra.id,idObra,museosCol)
       const idMuestra = muestra.id
       dispatch(obtenerObras({id,idRecorrido,idMuestra}))
       traerObras(idMuestra)
@@ -164,17 +170,21 @@ export default function Tressesenta ({ids}) {
   }
   const eliminarObra =(idObra)=>{
     const idMuestra = muestra.id
-    deleteObra(id,idRecorrido,idMuestra,idObra)
+    deleteObra(id,idRecorrido,idMuestra,idObra,museosCol)
     dispatch(obtenerObras({id,idRecorrido,idMuestra}))
     traerObras(idMuestra)
+    setModalDelObra(false)
   }
-
+  const borrarObra =(obra)=>{
+    setObraModal(obra)
+    setModalDelObra(true)
+  }
 
   const crearMuestra =(e)=>{
     e.preventDefault()
     const {name} = e.target
     if(muestras.length===0){
-      createMuestra(id,idRecorrido,"1a_muestra1",name.value) 
+      createMuestra(id,idRecorrido,"1a_muestra1",name.value,museosCol) 
       dispatch(obtenerMuestras({id,idRecorrido}))
       
     }
@@ -182,14 +192,19 @@ export default function Tressesenta ({ids}) {
       const a = muestras[muestras.length-1]
       const index =parseInt(a.id.substring(10))
       
-      createMuestra(id,idRecorrido,`1a_muestra${index+1}`,name.value)
+      createMuestra(id,idRecorrido,`1a_muestra${index+1}`,name.value,museosCol)
       dispatch(obtenerMuestras({id,idRecorrido}))
     }
     
   }
   const eliminarMuestra = (idMuestra)=>{
-    deleteMuestra(id,idRecorrido,idMuestra)
+    deleteMuestra(id,idRecorrido,idMuestra,museosCol)
     dispatch(obtenerMuestras({id,idRecorrido}))
+    setModalDelMuestras(false)
+  }
+  const borrarMuestraModal=(muestra)=>{
+    setModalDelMuestras(true)
+    setMuestraModal(muestra)
   }
 
   const subir =(e)=>{
@@ -204,7 +219,7 @@ export default function Tressesenta ({ids}) {
   
   const uploadFiles =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`/NewStorage/Museos/${museo.nombre}/Recorridos/${idRecorrido}/Muestras/${muestra.id}/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -245,7 +260,7 @@ export default function Tressesenta ({ids}) {
   
   const uploadFilesObra =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`NewStorage/Museos/${museo.nombre}/Recorridos/${idRecorrido}/Muestras/${muestra.id}/Obras/${obra.id}/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -289,6 +304,41 @@ export default function Tressesenta ({ids}) {
   
   return (
     <Page>
+      {modalDelMuestras&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {muestraModal.nombremuestra}?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setModalDelMuestras(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarMuestra(muestraModal.id)
+                  console.log(muestraModal)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
+
+
+      {modalDelObra&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-[1000] bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {obraModal.id}?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setModalDelObra(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  // eliminarObra(modalLayer.id)
+                  eliminarObra(obraModal.id)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
+
       {open2&&
           <div className='absolute bg-black bg-opacity-70 h-screen w-full top-0 z-50 flex flex-col items-center justify-center '>
               <div className='flex flex-col justify-between bg-colo5-phone-gray w-4/5 h-5/6 relative rounded-lg '>
@@ -297,11 +347,11 @@ export default function Tressesenta ({ids}) {
                      {obras.map((obra)=>
                  
                     <div className=' h-4/5  relative flex flex-col' >                     
-                      <img className='border-[1px] min-h-[200px] max-h-[200px]' src={obra.urlobra} alt="" />
+                      <img className='border-[1px] min-h-[200px] max-h-[100px]' src={obra.urlobra} alt="" />
                       
                       <h1 className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white '>{obra.id}</h1>
                       <button onClick={()=>{tomarObra(obra.id)}} className='absolute bottom-[-20px] right-0 bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
-                      <button className='text-white bg-red-600 absolute top-0 right-0 ' onClick={()=>{eliminarObra(obra.id)}}>X</button>
+                      <button className='text-white bg-red-600 absolute top-0 right-0 ' onClick={()=>{borrarObra(obra)}}>X</button>
                     </div>
                  
                   )}
@@ -333,7 +383,7 @@ export default function Tressesenta ({ids}) {
                             
                                     
                                     
-                                    <input type="text" className='w-[1400px]  text-xs p-4 ' name='urlobra' defaultValue={obra.urlobra} />
+                                    <input type="text" className='w-[1400px]  text-xs p-4 ' name='urlobra' defaultValue={obra.urlObra} />
                                     
                                     <input type="hidden" name='idObra' defaultValue={obra.id} />
                                     
@@ -378,12 +428,12 @@ export default function Tressesenta ({ids}) {
                     <div className='h-[400px]  overflow-auto contenedor'>
                       <p className='text-white text-sm'>Muestras:</p>
 
-                      <div className='grid grid-cols-2  relative w-full  '>
+                      <div className='grid grid-cols-2 gap-1  relative w-full  '>
                         {muestras.map((muestra)=>
-                        <div className='p-1 relative flex flex-col items-center z-10 h-24' >
-                          <img  src={muestra.imgmuestra} alt="" onClick={()=>{tomarmuestra(muestra.id)}} />
+                        <div className=' relative flex flex-col items-center z-10 h-28 overflow-hidden' >
+                          <img className='max-h-56 h-56' src={muestra.imgmuestra} alt="" onClick={()=>{tomarmuestra(muestra.id)}} />
                           <p className='text-white text-[9px] absolute bottom-[7px] bg-black py-2 w-full text-center bg-opacity-60'>{muestra.nombremuestra}</p>
-                          <button className='text white bg-red-500 absolute top-0 right-0' onClick={()=>{eliminarMuestra(muestra.id)}}>X</button>
+                          <button className='text white bg-red-500 absolute top-0 right-0' onClick={()=>{borrarMuestraModal(muestra)}}>X</button>
                         </div>
                         )}
                         <form action="" onSubmit={crearMuestra}>
@@ -423,37 +473,39 @@ export default function Tressesenta ({ids}) {
                         </li>
                     </ul>
                     </nav>
-                    <div className='relative'>
+                    <div className='relative overflow-auto  '>
                       <button className='text-colo6-phone-oringe absolute top-4 left-4' onClick={()=>{setOpen(false)}}><FaArrowLeft/></button>
-                        <div className='h-44 overflow-hidden mb-20'>
-                           <img className=' mb-3' src={muestra.imgmuestra} alt="" />
+                        <div className=' overflow-hidden h-[200px] '>
+                           <img className='' src={muestra.imgmuestra} alt="" />
                         </div>
-                        
-                        <div className='w-full  bg-emerald-400 text-white text-center absolute top-44'>
-                          <p className='pt-4 text-xs'>{muestra.nombremuestra}</p>
-                          <p className='pt-4 pb-1 text-xs'>{muestra.autor}</p>
-                        </div>
-                        
-                        <div className=" flex justify-around  w-full my-1">
-                            <ReactAudioPlayer
-                            src={muestra.audioobra}
-                            autoPlay={false}
-                            controls
-                            style={{textEmphasisColor:"red"}}
-                            />
-                        </div>
-                        <div className='overflow-auto h-[115px] contenedor '>
+                        <div className='contenedor h-[350px] overflow-auto pb-0'>
+                            <div className='w-full  bg-emerald-400 text-white text-center  '>
+                              <p className='pt-4 text-xs'>{muestra.nombremuestra}</p>
+                              <p className='pt-4 pb-1 text-xs'>{muestra.autor}</p>
+                            </div>
                             
-                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra}</p>
-                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra2}</p>
-                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra3}</p>
-                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra4}</p>
-                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra5}</p>
+                            <div className=" flex justify-around overflow-auto w-full my-1">
+                                <ReactAudioPlayer
+                                src={muestra.audioobra}
+                                autoPlay={false}
+                                controls
+                                style={{textEmphasisColor:"red"}}
+                                />
+                            </div>
+                            <div className=' h-[100px] overflow-auto contenedor mb-0 '>
+                                
+                                <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra}</p>
+                                <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra2}</p>
+                                <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra3}</p>
+                                <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra4}</p>
+                                <p className='text-white text-sm mx-2 mb-2 text-justify'>{muestra.descmuestra5}</p>
+                            </div>
+                    <div className="h-14 bg-black rounded-b-[34px] w-[284px]   z-70"></div>
                         </div>
+                        
                         
                     </div>
                     
-                    <div className="h-14 bg-black rounded-b-[34px] w-[286px]  bottom-0 z-70"></div>
                 </div>
 
             </div>} 
@@ -461,7 +513,7 @@ export default function Tressesenta ({ids}) {
                 <form  onSubmit={editarmuestra} className='w-2/4 flex flex-col'>
                     <h2 className='text-3xl text-center w-full m-auto  text-white my-6'>Modifica a "{muestra.nombremuestra}"</h2>
                         
-                    <div className='h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
+                    <div className='h-4/5 bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
                         <div className='h-full  flex flex-col gap-4  w-1/2 px-10'>
                             <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="hidden"name='idMuestra' value={muestra.id} />
                             

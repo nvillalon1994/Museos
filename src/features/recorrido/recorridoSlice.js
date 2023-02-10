@@ -7,8 +7,11 @@ const initialState ={
     loading:false
 }
 
-export const obtenerRecorridos = createAsyncThunk("recorridos", async (id)=>{
-    const recorridos = await getRecorrido(id)
+export const obtenerRecorridos = createAsyncThunk("recorridos", async (id,thunkAPI)=>{
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
+    
+    const recorridos = await getRecorrido(id,museoscol)
     console.log("se ejecuta")
     return recorridos
 })

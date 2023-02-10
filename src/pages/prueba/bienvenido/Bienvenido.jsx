@@ -39,6 +39,14 @@ export default function Bienvenido({idMuseo}) {
   const [open,setOpen] = useState(false)
   const [open2,setOpen2] = useState(true)
   const [openpan,setOpenpan] = useState(false)
+
+  const [deleteLayerModal,setDeleteLayerModal] = useState(false)
+  const [modalLayer,setModalLayer]= useState({})
+
+  const [deletePanoramaModal,setDeletePanoramaModal] = useState(false)
+  const [modalPanorama,setModalPanorama]= useState()
+  
+
   const [urlFile,setUrlFile] = useState()
   const [progress,setProgress]=useState()
 
@@ -52,6 +60,9 @@ export default function Bienvenido({idMuseo}) {
   })
   const [panoramas2,setPanoramas2] = useState([])
 
+  const {museosCol} = useSelector(state=>state.museos)
+  console.log(museosCol)
+
   
   const objetoIdMuseo = useParams(idMuseo)
   const id = objetoIdMuseo.idMuseo
@@ -60,7 +71,11 @@ export default function Bienvenido({idMuseo}) {
   const {museo} = useSelector(state=>state.museo)
   const {panoramas} =useSelector(state=>state.panoramas)
  
-  
+  const borrarLayer=(layer)=>{
+    setDeleteLayerModal(true)
+    console.log(layer)
+    setModalLayer(layer)
+}
 
   const editarLayer =async (e)=>{
     e.preventDefault()
@@ -79,7 +94,7 @@ export default function Bienvenido({idMuseo}) {
 
     }
 
-    await updateBienvenidaLayer(id,idLayer.value,layerEditada)
+    await updateBienvenidaLayer(id,idLayer.value,layerEditada,museosCol)
     dispatch(obtenerBienvenido(id))
     const newLayer =layerEditada
     newLayer.id=idLayer.value
@@ -120,7 +135,7 @@ export default function Bienvenido({idMuseo}) {
     
     if(bienvenido.length===0){
       const idLayer=`1a_layer1`
-      createLayer(id,idLayer)
+      createLayer(id,idLayer,museosCol)
       dispatch(obtenerBienvenido(id))
       // setOpenpan(true)
     }else{
@@ -135,7 +150,7 @@ export default function Bienvenido({idMuseo}) {
       const index =Math.max(...arrayLayer)
       console.log(arrayLayer)
       const idLayer= `1a_layer${index+1}`
-      createLayer(id,idLayer)
+      createLayer(id,idLayer,museosCol)
       dispatch(obtenerBienvenido(id))
       // const idPan2 =`1a_panorama${index+1}`
       // createPanorama(id,layer.id,idPan2)
@@ -149,13 +164,14 @@ export default function Bienvenido({idMuseo}) {
   }
   const eliminarLayer=(idLayer)=>{
     console.log(idLayer)
-    deleteLayer(id,idLayer)
+    deleteLayer(id,idLayer,museosCol)
+    setDeleteLayerModal(false)
     dispatch(obtenerBienvenido(id))
   }
   const crearPanorama=()=>{
     if(panoramas.length===0){
       const idPan=`1a_panorama1`
-      createPanorama(id,layer.id,idPan)
+      createPanorama(id,layer.id,idPan,museosCol)
       
       const idLayer=layer.id
       abrirPanoramas(id,idLayer)
@@ -171,7 +187,7 @@ export default function Bienvenido({idMuseo}) {
       const index =Math.max(...arrayPans)
       console.log(index)
       const idPan2 =`1a_panorama${index+1}`
-      createPanorama(id,layer.id,idPan2)
+      createPanorama(id,layer.id,idPan2,museosCol)
       
       const idLayer2=layer.id
       abrirPanoramas(id,idLayer2)
@@ -181,13 +197,18 @@ export default function Bienvenido({idMuseo}) {
     
   }
   const eliminarPanorama=(idPan)=>{
-    deletePan(id,layer.id,idPan)
+    deletePan(id,layer.id,modalPanorama.id,museosCol)
     const idLayer=layer.id
     abrirPanoramas(id,idLayer)
     setOpenpan(true)
+    setDeletePanoramaModal(false)
     
   }
-
+  const borrarPanorama=(panorama)=>{
+    
+    setDeletePanoramaModal(true)
+    setModalPanorama(panorama)
+}
 
   const subir =(e)=>{
     e.preventDefault()
@@ -201,7 +222,7 @@ export default function Bienvenido({idMuseo}) {
   
   const uploadFiles =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`NewStorage//Museos/${museo.nombre}/Bienvenido/${layer.nombrelayer}/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -263,7 +284,7 @@ export default function Bienvenido({idMuseo}) {
       id,
       idLayer.value,
       idPanorama.value,
-      panoramaEditado
+      panoramaEditado,museosCol
     );
     setPan(panoramaEditado)
     
@@ -305,7 +326,7 @@ export default function Bienvenido({idMuseo}) {
   
   const uploadFilesPan =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`NewStorage//Museos/${museo.nombre}/Bienvenido/${layer.nombrelayer}/panoramas/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -345,7 +366,37 @@ export default function Bienvenido({idMuseo}) {
   return (
     <Page>
           
+          {deleteLayerModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalLayer.nombre}?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setDeleteLayerModal(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarLayer(modalLayer.id)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
           
+          {deletePanoramaModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-[1000] bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalPanorama.id} ?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setDeletePanoramaModal(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarPanorama(modalPanorama.id)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
           {openpan&&
           <div className='absolute bg-black bg-opacity-70 h-screen w-full top-0 z-50 flex flex-col items-center justify-center '>
               <div className='flex flex-col justify-between bg-colo5-phone-gray w-4/5 h-5/6 relative rounded-lg '>
@@ -357,7 +408,7 @@ export default function Bienvenido({idMuseo}) {
                       
                       <h1 className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white '>{panorama.id}</h1>
                       <button onClick={()=>{tomarPanorama(panorama.id)}} className='absolute bottom-[-20px] right-0 bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
-                      <button onClick={(()=>{eliminarPanorama(panorama.id)})} className=" absolute top-0 right-0 text-red-500 mx-2">x</button>
+                      <button onClick={(()=>{borrarPanorama({id:panorama.id,nombre:panorama})})} className=" absolute top-0 right-0 text-red-500 mx-2">x</button>
 
                     </div>
                  
@@ -444,7 +495,8 @@ export default function Bienvenido({idMuseo}) {
                   
                   <h4 className="text-white text-xs " onClick={()=>{tomarLayer(layer.id)}}>{layer.nombrelayer}</h4>
                   <button className=' text-white'><IoMdArrowDropdown  onClick={()=>{tomarLayer(layer.id)}}/></button>
-                  <button className='text-white  absolute right-0 z-90 text-md hover:text-red-500 p-1' onClick={()=>{eliminarLayer(layer.id)}}><AiOutlineDelete/></button>
+                  <button className='text-white  absolute right-0 z-90 text-md hover:text-red-500 p-1' onClick={()=>{borrarLayer({id:layer.id,nombre:layer.nombrelayer})}}><AiOutlineDelete/></button>
+                  
                 </div>
                 
                 )}
@@ -500,7 +552,7 @@ export default function Bienvenido({idMuseo}) {
                 />
                 </div>
 
-                <div className=" relative mx-2 bg-emerald-400 mb-2 h-[309px] flex flex-col   rounded-md">
+                <div className=" relative mx-2 bg-emerald-400 mb-0 h-[330px] flex flex-col   rounded-md">
                   <div className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-lg" onClick={()=>{setOpen(false)}}>
                     
                     <h4 className="text-white text-xs text-center  my-2" >
@@ -575,11 +627,11 @@ export default function Bienvenido({idMuseo}) {
             
             </div>:<></>}
             
-            {layer&&<form  onSubmit={editarLayer} className='w-2/4 flex flex-col '>
+            {layer&&<form  onSubmit={editarLayer} className='w-2/4  flex flex-col '>
                         <h2 className='text-3xl text-center w-full m-auto  text-white mt-6 '>Modifica a {layer.nombrelayer}</h2>
                         
-                        <div className='h-[500px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black '>
-                            <div className='h-full  flex flex-col gap-6 mt-5 w-1/2 px-10'>
+                        <div className='h-auto bg-colo7-phone-dark w-11/12 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black  pb-4 '>
+                            <div className='  flex flex-col gap-6 mt-5 w-1/2 px-10'>
                                     {/* <label htmlFor="idLayer"></label> */}
                                     <input hidden type="text" name='idLayer' defaultValue={layer.id} />
                                     <div className='flex flex-col gap-1'>
@@ -646,7 +698,7 @@ export default function Bienvenido({idMuseo}) {
                             </div>
                         </div>
                         
-                        <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar Layer</button>
+                        <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300 '  >Actualizar Layer</button>
                 
                     </form>}
                 

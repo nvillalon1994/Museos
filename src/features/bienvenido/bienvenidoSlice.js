@@ -7,8 +7,11 @@ const initialState ={
     loading:false
 }
 
-export const obtenerBienvenido = createAsyncThunk("bienvenido", async (id)=>{
-    const bienvenido = await getBienvenido(id)
+export const obtenerBienvenido = createAsyncThunk("bienvenido", async (id,thunkAPI)=>{
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
+    
+    const bienvenido = await getBienvenido(id,museoscol)
     console.log("se ejecuta")
     return bienvenido
 })

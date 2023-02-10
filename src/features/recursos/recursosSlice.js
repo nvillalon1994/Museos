@@ -7,13 +7,15 @@ const initialState ={
     loading:false
 }
 
-export const obtenerRecursos = createAsyncThunk("recursos", async (info)=>{
+export const obtenerRecursos = createAsyncThunk("recursos", async (info,thunkAPI)=>{
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
     
     
     const idMuseo = info.id
     const idRecorrido = info.idRecorrido
     
-    const recursos = await getRecursos(idMuseo,idRecorrido)
+    const recursos = await getRecursos(idMuseo,idRecorrido,museoscol)
     console.log(recursos)
     
     return recursos

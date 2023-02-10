@@ -7,12 +7,14 @@ const initialState ={
     loading:false
 }
 
-export const obtenerPanoramas = createAsyncThunk("panoramas", async (info)=>{
+export const obtenerPanoramas = createAsyncThunk("panoramas", async (info,thunkAPI)=>{
+    const state =thunkAPI.getState()
+    const museoscol = state.museos.museosCol
     
     
     const idMuseo = info.idMuseo
     const idLayer = info.idLayer
-    const panoramas = await get360(idMuseo,idLayer)
+    const panoramas = await get360(idMuseo,idLayer,museoscol)
     
     return panoramas
 })

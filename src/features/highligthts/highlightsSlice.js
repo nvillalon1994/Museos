@@ -8,8 +8,8 @@ const initialState ={
     loading:false
 }
 
-export const obtenerHighlights = createAsyncThunk("highlights", async ()=>{
-    const highlights = await getHighlights()
+export const obtenerHighlights = createAsyncThunk("highlights", async (data)=>{
+    const highlights = await getHighlights(data)
     return highlights
 })
 

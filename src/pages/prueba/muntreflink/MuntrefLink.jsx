@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import Page from '../../../components/Page'
 import { obtenerBienvenido } from '../../../features/bienvenido/bienvenidoSlice'
 import { obtenerMuntref_Links } from '../../../features/Muntref_Link/muntrefLink'
-import { createLink, createLinkmp, deleteLink, deleteLinkmp, updateBienvenidaLayer, updateLink, updateLinkmp } from '../../../firebase'
+import { createLink, createlinksmp, deleteLink, deletelinksmp, updateBienvenidaLayer, updateLink, updatelinksmp } from '../../../firebase'
 import {
   BiLogOutCircle,
   BiWorld,
@@ -37,13 +37,19 @@ export default function Bienvenida({idMuseo}) {
   const [boton,setBoton] = useState(false)
   const [linkmp,setLinkmp]=useState({})
   
+  const [modalDelLink,setModalDelLink] = useState(false)
+  const [modalLink,setModalLink]= useState({})
+  
+  const [modalDelLinkmp,setModalDelLinkmp] = useState(false)
+  const [modalLinkmp,setModalLinkmp]= useState({})
+
   const objetoIdMuseo = useParams(idMuseo)
   const id = objetoIdMuseo.idMuseo
   // console.log(id)
   const {muntrefLinks} = useSelector(state=>state.muntrefLinks)
   const {museo} = useSelector(state=>state.museo)
   const {linksmp} = useSelector(state=>state.linksmp)
-  
+  const {museosCol} = useSelector(state=>state.museos)
 
   const editarLink =async (e)=>{
     e.preventDefault()
@@ -61,7 +67,7 @@ export default function Bienvenida({idMuseo}) {
     
 
     console.log(linkEditado)
-    await updateLink(id,idLink.value,linkEditado)
+    await updateLink(id,idLink.value,linkEditado,museosCol)
     dispatch(obtenerMuntref_Links(id))
     const newLink =linkEditado
     newLink.id=idLink.value
@@ -97,7 +103,7 @@ export default function Bienvenida({idMuseo}) {
   
   const uploadFiles =(file)=>{
     if(!file)return
-        const storageRef =ref(storage,`/files/${file.name}`)
+        const storageRef =ref(storage,`NewStorage/Museos/${museo.nombre}/MuntrefLinks/${link.nombrelink}/${file.name}`)
         const uploadTask= uploadBytesResumable(storageRef ,file)
         uploadTask.on("state_changed",(snapshot)=>{
             const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) *100)
@@ -152,7 +158,7 @@ export default function Bienvenida({idMuseo}) {
     console.log(link.id)
     // console.log(linkEditado)
     console.log(id,link.id,idlink.value,linkEditado)
-    await updateLinkmp(id,link.id,idlink.value,linkEditado)
+    await updatelinksmp(id,link.id,idlink.value,linkEditado,museosCol)
     
     dispatch(obtenerLinksmp({id,idLink:link.id}))
     const newLinkmp =linkEditado
@@ -167,7 +173,7 @@ export default function Bienvenida({idMuseo}) {
   const crearLink=()=>{
     if(muntrefLinks.length===0){
       const idLink = "1a_link1"
-      createLink(id,idLink)
+      createLink(id,idLink,museosCol)
       dispatch(obtenerMuntref_Links(id))
 
     }
@@ -182,9 +188,15 @@ export default function Bienvenida({idMuseo}) {
     // createLink()
   }  
   const eliminarLink=(idLink)=>{
-    deleteLink(id,idLink)
+    deleteLink(id,idLink,museosCol)
     dispatch(obtenerMuntref_Links(id))
+    setModalDelLink(false)
   }  
+  const borrarLink=(link)=>{
+    console.log(link)
+    setModalLink(link)
+    setModalDelLink(true)
+  }
   
 
   const crearLinkmp=()=>{
@@ -193,7 +205,7 @@ export default function Bienvenida({idMuseo}) {
     console.log(linksmp)
     if(linksmp.length===0){
       const idLinkmp = "1a_link1"
-      createLinkmp(id,idLink,idLinkmp)
+      createlinksmp(id,idLink,idLinkmp,museosCol)
       dispatch(obtenerLinksmp({id,idLink}))
     }else{
       const a = linksmp[linksmp.length-1]
@@ -201,16 +213,23 @@ export default function Bienvenida({idMuseo}) {
       console.log(index)
       const idLinkmp = `1a_link${index+1}`
     //   console.log(index,idLinkmp)
-      createLinkmp(id,idLink,idLinkmp)
+      createlinksmp(id,idLink,idLinkmp,museosCol)
       dispatch(obtenerLinksmp({id,idLink}))
     }
     
   }
   const eliminarLinkmp=(idLinkmp)=>{
     const idLink = link.id
-    deleteLinkmp(id,idLink,idLinkmp)
+    deletelinksmp(id,idLink,idLinkmp,museosCol)
     dispatch(obtenerLinksmp({id,idLink}))
+    setModalDelLinkmp(false)
   }  
+  const borrarLinkmp=(linkmp)=>{
+
+    console.log(linkmp)
+    setModalLinkmp(linkmp)
+    setModalDelLinkmp(true)
+  }
 
   const dispatch = useDispatch()
   useEffect(()=>{
@@ -228,13 +247,29 @@ export default function Bienvenida({idMuseo}) {
               <p className=''>ulinkmp:  <span className='font-bold'>{linkmp.ulinkmp}</span></p>
               <p className=''>ulinkmp:  <span className='font-bold'>{linkmp.urllinkmp}</span></p>
               <button className='bg-emerald-400 p-1  rounded' onClick={()=>tomarLinkmp(linkmp.id)}>modificar</button>
-              <button className='text-white bg-red-500 absolute top-0 right-0' onClick={()=>{eliminarLinkmp(linkmp.id)}}> X</button>
+              <button className='text-white bg-red-500 absolute top-0 right-0' onClick={()=>{borrarLinkmp(linkmp)}}> X</button>
             </div>)}
             
               <button onClick={crearLinkmp}>nuevoa</button>
               
             
           </div>
+          {modalDelLinkmp&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalLinkmp.id} ?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setModalDelLinkmp(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarLinkmp(modalLinkmp.id)
+                  // console.log(modalLink)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
           {linkmp&&
           <form  onSubmit={editarlinkmp} className='w-1/3 flex flex-col  '>
               <h2 className='text-3xl text-center w-full mb-6  text-white '>Modifica a {linkmp.id}</h2>
@@ -264,7 +299,24 @@ export default function Bienvenida({idMuseo}) {
 
         <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={()=>{setOpenlink(false)}}>X</button>
           </div>}
-        
+
+
+        {modalDelLink&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+            <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
+              <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalLink.nombrelink} ?</p>
+              <div className='flex m-auto gap-5'>
+                
+                <button className=' p-2 bg-red-500 rounded-md text-white' onClick={()=>{
+                  setModalDelLink(false)
+                }}>Cancelar</button>
+                <button className=' p-2 bg-green-500 rounded-md text-white 'onClick={()=>{
+                  eliminarLink(modalLink.id)
+                  // console.log(modalLink)
+                }} >Eliminar</button>
+              </div>
+            </div>
+            
+          </div>}
         <section className=' flex  justify-around '>
         {!open&&<div className="relative flex  justify-between w-1/4 " >
               
@@ -287,12 +339,15 @@ export default function Bienvenida({idMuseo}) {
                     <h1 className='bg-colo6-phone-oringe text-xs text-center text-white py-2 font-semibold '>RECORRIDO VIRTUAL DEL MUSEO 360°</h1>
                     <p className='text-xs text-red-900 text-justify m-1'>Ingresando aqui, podrás recorrer virtualmente el {museo.nombre}. En cada imagen podrás descubrir el entorno simplemente deslizando tu dedo en cualquier dirección, y podrás entrar en los hotspots que cada lugar ofrece.</p>
                     {muntrefLinks.map((link)=>
-                    <div className='relative w-full relative'onClick={()=>{tomarLink(link.id)}} >
-                      <img className='h-40' src={link.imglink} alt="" />
+                    <div className='relative w-full 'onClick={()=>{tomarLink(link.id)}} >
+                      <div className='h-40 overflow-hidden relative flex justify-center'>
+                        <img className='w-full absolute m-auto' src={link.imglink} alt="" />
+                        
+                      </div>
                       
                       <p className='absolute w-full bottom-0 bg-black text-white bg-opacity-80 text-center py-3'>{link.nombrelink}</p>
                       
-                     <button className='bg-red-500 text-white absolute right-0 top-0' onClick={()=>{eliminarLink(link.id)}}>X</button>
+                     <button className='bg-red-500 text-white absolute right-0 top-0' onClick={()=>{borrarLink(link)}}>X</button>
                     </div>)}
                     <button className='' onClick={crearLink}>Nuevo</button>
                   </div>

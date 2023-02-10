@@ -43,12 +43,13 @@ export function cambiarMuseo(museo1){
     return museo
     
 }
-export async function getMuseums(){
-    
+export async function getMuseums(museos){
+    console.log(typeof(museos))
     // const MuseosCol = collection(db,museo)
-    const MuseosCol = collection(db,"MuseosPrueba")
+    const MuseosCol = collection(db,museos)
     const id = "Untref museo"
-    // const BienvenidaCol = collection(db,"MuseosPrueba/"+id+"/bienvenido")
+    console.log(MuseosCol)
+    // const BienvenidaCol = collection(db,museosCol + '/'+id+"/bienvenido")
     // const BienvenidaCol = collection(db, "/"+museo+"/"+id+"/bienvenido")
     
     const snapshot = await getDocs(MuseosCol)
@@ -57,9 +58,9 @@ export async function getMuseums(){
     
 }
 
-export async function createLayer(id,idLayer){
+export async function createLayer(id,idLayer,museosCol){
     const infoLayer={
-        Audiolayer:"audioLayer",
+        audiolayer:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         es360:"si",
         imglayer:"https://images.unsplash.com/photo-1617257118084-339d30c49b02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
         end:"end",
@@ -76,32 +77,32 @@ export async function createLayer(id,idLayer){
         "360panorama":"panorama"
 
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',idLayer),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/'+idLayer+'/360',"1a_panorama_1"),info360)
+    setDoc(doc(db,museosCol + '/'+id+'/bienvenido',idLayer),infoLayer)
+    setDoc(doc(db,museosCol + '/'+id+'/bienvenido/'+idLayer+'/360',"1a_panorama1"),info360)
 }
 
-export async function deleteLayer(id,idLayer){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/bienvenido",idLayer))
+export async function deleteLayer(id,idLayer,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/bienvenido",idLayer))
 }
 
-export async function createPanorama(id,idLayer,idPan){
+export async function createPanorama(id,idLayer,idPan,museosCol){
     const info360 = {
         
         "360panorama":"https://images.unsplash.com/photo-1534445291134-f70b7a81f691?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80"
 
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/'+idLayer+'/360',idPan),info360)
+    setDoc(doc(db,museosCol + '/'+id+'/bienvenido/'+idLayer+'/360',idPan),info360)
 }
 
-export async function deletePan(id,idLayer,idPan){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/bienvenido/"+idLayer+"/360",idPan))
+export async function deletePan(id,idLayer,idPan,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/bienvenido/"+idLayer+"/360",idPan))
 }
 
 
 
-export async function createRecorrido(id,idRecorrido, nombre){
+export async function createRecorrido(id,idRecorrido, nombre,museosCol){
     const infoColRecorrido={
-        audioreco:"audioreco",
+        audioreco:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         colorreco:"colorreco",
         colorreco2:"colorreco2",
         colorreco3:"colorreco3",
@@ -112,7 +113,7 @@ export async function createRecorrido(id,idRecorrido, nombre){
 
     }
     const infoMuestra={
-        audioObra:"insertarAudio",
+        audioobra:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         auto:"autor",
         descmuestra1:"descmuestra1",
         descmuestra2:"descmuestra2",
@@ -151,18 +152,18 @@ export async function createRecorrido(id,idRecorrido, nombre){
         recutitulo:"recutitulo",
         recuvid:"recuvid"
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',idRecorrido),infoColRecorrido)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras',"1a_muestra1"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/recursos',"1a_recurso1"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido',idRecorrido),infoColRecorrido)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/recursos',"1a_recurso1"),infoRecurso)
 }
-export async function deleteRecorrido(id,idRecorrido){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido",idRecorrido))
+export async function deleteRecorrido(id,idRecorrido,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/recorrido",idRecorrido))
 }
 
-export async function createMuestra(id,idRecorrido,idMuestra,nombre){
+export async function createMuestra(id,idRecorrido,idMuestra,nombre,museosCol){
     const infoMuestra={
-        audioObra:"insertarAudio",
+        audioobra:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         auto:"autor",
         descmuestra1:"descmuestra1",
         descmuestra2:"descmuestra2",
@@ -186,14 +187,14 @@ export async function createMuestra(id,idRecorrido,idMuestra,nombre){
         nombreobra5:"nombreobra5",
         urlobra:"urlObra"
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras',idMuestra),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/muestras',idMuestra),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',"1a_obra1"),infoObra)
 }
-export async function deleteMuestra(id,idRecorrido,idMuestra){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/",idMuestra))
+export async function deleteMuestra(id,idRecorrido,idMuestra,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/recorrido/"+idRecorrido+"/muestras/",idMuestra))
 }
 
-export async function createObra(id,idRecorrido,idMuestra,idObra){
+export async function createObra(id,idRecorrido,idMuestra,idObra,museosCol){
     const infoObra ={
         nombreobra:"nombreobra",
         nombreobra2:"nombreobra2",
@@ -202,13 +203,13 @@ export async function createObra(id,idRecorrido,idMuestra,idObra){
         nombreobra5:"nombreobra5",
         urlobra:"urlObra"
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',idObra),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/muestras/'+idMuestra+'/obrasimg',idObra),infoObra)
 }
-export async function deleteObra(id,idRecorrido,idMuestra,idObra){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+'/obrasimg',idObra))
+export async function deleteObra(id,idRecorrido,idMuestra,idObra,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+'/obrasimg',idObra))
 }
 
-export async function createRecurso(id,idRecorrido,idRecurso,nombre){
+export async function createRecurso(id,idRecorrido,idRecurso,nombre,museosCol){
     const infoRecurso ={
         recuimg:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
         recutexto:"recutexto",
@@ -224,14 +225,14 @@ export async function createRecurso(id,idRecorrido,idRecurso,nombre){
         recutitulo:nombre,
         recuvid:"recuvid"
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/'+idRecorrido+'/recursos',idRecurso),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/recursos',idRecurso),infoRecurso)
 }
-export async function deleteRecurso(id,idRecorrido,idRecurso){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/recursos/",idRecurso))
+export async function deleteRecurso(id,idRecorrido,idRecurso,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/recorrido/"+idRecorrido+"/recursos/",idRecurso))
 }
 
 
-export async function createLink(id,idLink){
+export async function createLink(id,idLink,museosCol){
     const infoCollinks ={
         desclink:"descklink",
         imglink:"imglink",
@@ -245,36 +246,37 @@ export async function createLink(id,idLink){
         urllink:"urllink"
     }
     const infoColLinksMP={
-        nlinkmp:"nlinkmp",
-        urllinkmp:"urllinkmp"
+        nlinksmp:"nlinksmp",
+        urllinksmp:"urllinksmp"
 
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link',idLink),infoCollinks)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/'+idLink+'/linksmp',"1a_link1"),infoColLinksMP)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link',idLink),infoCollinks)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link/'+idLink+'/linksmp',"1a_link1"),infoColLinksMP)
 }
-export async function deleteLink(id,idLink){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/muntref_link",idLink))
+export async function deleteLink(id,idLink,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/muntref_link",idLink))
 }
-export async function createLinkmp(id,idLink,idLinkmp){
+export async function createlinksmp(id,idLink,idlinksmp,museosCol){
     const infoColLinksMP={
-        nlinkmp:"nlinkmp",
-        urllinkmp:"urllinkmp"
+        nlinksmp:"nlinksmp",
+        urllinksmp:"urllinksmp"
 
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/'+idLink+'/linksmp',idLinkmp),infoColLinksMP)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link/'+idLink+'/linksmp',idlinksmp),infoColLinksMP)
 }
-export async function deleteLinkmp(id,idLink,idLinkmp){
-    deleteDoc(doc(db, "MuseosPrueba/"+id+"/muntref_link/"+idLink+"/linksmp",idLinkmp))
+export async function deletelinksmp(id,idLink,idlinksmp,museosCol){
+    deleteDoc(doc(db, museosCol + '/'+id+"/muntref_link/"+idLink+"/linksmp",idlinksmp))
 }
 
 
 
 
 
-export async function createMuseums(id,info1,description){
+export async function createMuseums(id,museosCol){
     // bienvenida
+    
     const infoMuseo ={
-        Acerca: true,
+        acerca: true,
         descripcion:"Descripción",
         direccion:"direccion",
         horario:"9am a 4pm",
@@ -290,12 +292,12 @@ export async function createMuseums(id,info1,description){
     // Muntref_Link
     
     //SE CREA EL MUSEO
-    setDoc(doc(db,'MuseosPrueba',id),
+    setDoc(doc(db,museosCol,id),
     infoMuseo)
-    // setDoc(collection(db,'MuseosPrueba/'+id+'/Bienvenido'),primerInfo)
+    // setDoc(collection(db,museosCol + '/'+id+'/Bienvenido'),primerInfo)
     //RAMA BIENVENIDO
     const infoLayer={
-        Audiolayer:"audioLayer",
+        audiolayer:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         es360:"si",
         imglayer:"https://images.unsplash.com/photo-1617257118084-339d30c49b02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
         end:"end",
@@ -313,37 +315,37 @@ export async function createMuseums(id,info1,description){
 
     }
     
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer1"),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer2"),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer3"),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer4"),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer5"),infoLayer)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido',"1a_layer6"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer1"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer2"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer3"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer4"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer5"),infoLayer)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido',"1a_layer6"),infoLayer)
     
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer1/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer1/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer1/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer1/360',"1a_panorama_4"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer2/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer2/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer2/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer2/360',"1a_panorama_4"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer3/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer3/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer3/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer3/360',"1a_panorama_4"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer4/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer4/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer4/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer4/360',"1a_panorama_4"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer5/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer5/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer5/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer5/360',"1a_panorama_4"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer6/360',"1a_panorama_1"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer6/360',"1a_panorama_2"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer6/360',"1a_panorama_3"),info360)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/bienvenido/1a_layer6/360',"1a_panorama_4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer1/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer1/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer1/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer1/360',"1a_panorama4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer2/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer2/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer2/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer2/360',"1a_panorama4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer3/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer3/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer3/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer3/360',"1a_panorama4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer4/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer4/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer4/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer4/360',"1a_panorama4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer5/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer5/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer5/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer5/360',"1a_panorama4"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer6/360',"1a_panorama1"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer6/360',"1a_panorama2"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer6/360',"1a_panorama3"),info360)
+    setDoc(doc(db,museosCol+'/'+id+'/bienvenido/1a_layer6/360',"1a_panorama4"),info360)
 
     //RAMA MUNTREF_LINK
     
@@ -360,24 +362,24 @@ export async function createMuseums(id,info1,description){
         urllink:"urllink"
     }
     const infoColLinksMP={
-        nlinkmp:"nlinkmp",
-        urllinkmp:"urllinkmp"
+        nlinksmp:"nlinksmp",
+        urllinksmp:"urllinksmp"
 
     }
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link',"1a_link1"),infoCollinks)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link',"1a_link2"),infoCollinks)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link',"1a_link3"),infoCollinks)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link',"1a_link1"),infoCollinks)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link',"1a_link2"),infoCollinks)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link',"1a_link3"),infoCollinks)
 
     
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/1a_link1/linkmp',"1a_link1"),infoColLinksMP)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/1a_link2/linkmp',"1a_link1"),infoColLinksMP)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/muntref_link/1a_link3/linkmp',"1a_link1"),infoColLinksMP)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link/1a_link1/linksmp',"1a_link1"),infoColLinksMP)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link/1a_link2/linksmp',"1a_link1"),infoColLinksMP)
+    setDoc(doc(db,museosCol + '/'+id+'/muntref_link/1a_link3/linksmp',"1a_link1"),infoColLinksMP)
 
 
     //RAMA RECORRIDO
     const infoColRecorrido={
-        audioreco:"audioreco",
+        audioreco:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         colorreco:"colorreco",
         colorreco2:"colorreco2",
         colorreco3:"colorreco3",
@@ -388,7 +390,7 @@ export async function createMuseums(id,info1,description){
 
     }
     const infoMuestra={
-        audioObra:"insertarAudio",
+        audioobra:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/Audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         auto:"autor",
         descmuestra1:"descmuestra1",
         descmuestra2:"descmuestra2",
@@ -425,258 +427,262 @@ export async function createMuseums(id,info1,description){
         recutextobottom4:"recutextobottom4",
         recutextobottom5:"recutextobottom5",
         recutitulo:"recutitulo",
-        recuvid:"recuvid"
+        recuvid:"B9vekk79LNo"
     }
     
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1a_Viaje"),infoColRecorrido)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1b_Arribo"),infoColRecorrido)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1c_Inserción"),infoColRecorrido)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido',"1d_Legado"),infoColRecorrido)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido',"1a_viaje"),infoColRecorrido)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido',"1b_arribo"),infoColRecorrido)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido',"1c_insercion"),infoColRecorrido)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido',"1d_legado"),infoColRecorrido)
     //EL VIAJE
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra1"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra2"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra3"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra4"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra5"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras',"1a_muestra6"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra2"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra3"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra4"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra5"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras',"1a_muestra6"),infoMuestra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso1"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso2"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso3"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso4"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso5"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1a_Viaje/recursos',"1a_recurso6"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso1"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso2"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso3"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso4"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso5"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1a_viaje/recursos',"1a_recurso6"),infoRecurso)
     //ARRIBO
     
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra1"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra2"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra3"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra4"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra5"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras',"1a_muestra6"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra2"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra3"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra4"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra5"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras',"1a_muestra6"),infoMuestra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso1"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso2"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso3"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso4"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso5"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1b_Arribo/recursos',"1a_recurso6"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso1"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso2"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso3"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso4"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso5"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1b_arribo/recursos',"1a_recurso6"),infoRecurso)
 
     //INSERCION
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra1"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra2"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra3"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra4"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra5"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras',"1a_muestra6"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra2"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra3"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra4"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra5"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras',"1a_muestra6"),infoMuestra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso1"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso2"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso3"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso4"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso5"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1c_Inserción/recursos',"1a_recurso6"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso1"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso2"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso3"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso4"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso5"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1c_insercion/recursos',"1a_recurso6"),infoRecurso)
 
     //LEGADO
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra1"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra2"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra3"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra4"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra5"),infoMuestra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras',"1a_muestra6"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra1"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra2"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra3"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra4"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra5"),infoMuestra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras',"1a_muestra6"),infoMuestra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra1/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra1/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra2/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra2/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra3/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra3/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra4/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra4/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra5/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra5/obrasimg',"1a_obra2"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra6/obrasimg',"1a_obra1"),infoObra)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/muestras/1a_muestra6/obrasimg',"1a_obra2"),infoObra)
 
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso1"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso2"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso3"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso4"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso5"),infoRecurso)
-    setDoc(doc(db,'MuseosPrueba/'+id+'/recorrido/1d_Legado/recursos',"1a_recurso6"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso1"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso2"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso3"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso4"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso5"),infoRecurso)
+    setDoc(doc(db,museosCol + '/'+id+'/recorrido/1d_legado/recursos',"1a_recurso6"),infoRecurso)
 
  
 }
 
 
-export const deleteMuseum = (id)=> {
-    deleteDoc(doc(db, "MuseosPrueba",id))
+export const deleteMuseum = (id,museosCol)=> {
+    deleteDoc(doc(db, museosCol ,id))
     
 }
 
 // export  const getMuseum =async(id)=>{
-//    const museo = await getDoc(doc(db, "MuseosPrueba",id))
+//    const museo = await getDoc(doc(db, "museos",id))
 //    return museo
 // } 
-export  const getMuseum =async(id)=>{
-   const museo = await getDoc(doc(db, "MuseosPrueba",id))
+export  const getMuseum =async(id,museosCol)=>{
+    console.log(museosCol)
+   const museo = await getDoc(doc(db, museosCol,id))
    console.log(id)
    return {...museo.data(),id:id}
 //    console.log(museo.data())
 } 
 
-export const updateMuseum = (id,newFields)=> updateDoc(doc(db,"MuseosPrueba",id),newFields)
+export const updateMuseum = (id,newFields,museosCol)=> updateDoc(doc(db,museosCol,id),newFields)
 
 export const onGetMuseum = (callback)=>{ 
-    onSnapshot(collection(db,'MuseosPrueba'),callback)
+    onSnapshot(collection(db,'museos'),callback)
     console.log("se ejecuto")
 }
 
 // BIENVENIDA 
-export async function getBienvenido(id){
-    const BienvenidaCol = collection(db,"MuseosPrueba/"+id+"/bienvenido")
+export async function getBienvenido(id,museosCol){
+    const BienvenidaCol = collection(db,museosCol+"/"+id+"/bienvenido")
     const snapshot = await getDocs(BienvenidaCol)
     console.log("estas aca")
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateBienvenidaLayer = (id,idLayer,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+id+"/bienvenido/"+idLayer),newFields)
+export const updateBienvenidaLayer = (id,idLayer,newFields,museosCol)=> updateDoc(doc(db,museosCol + '/'+id+"/bienvenido/"+idLayer),newFields)
 // BIENVENIDA/360
-export async function get360(idMuseo,idLayer){
+export async function get360(idMuseo,idLayer,museosCol){
     
-    const PanoramasCol = collection(db,"MuseosPrueba/"+idMuseo+"/bienvenido/"+idLayer+"/360")
+    const PanoramasCol = collection(db,museosCol+"/"+idMuseo+"/bienvenido/"+idLayer+"/360")
     const snapshot = await getDocs(PanoramasCol)
     
     
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const update360Panorama = (idMuseo,idLayer,idPanorama,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+idMuseo+"/bienvenido/"+idLayer+"/360/"+idPanorama),newFields)
+export const update360Panorama = (idMuseo,idLayer,idPanorama,newFields,museosCol)=> updateDoc(doc(db,museosCol + '/'+idMuseo+"/bienvenido/"+idLayer+"/360/"+idPanorama),newFields)
 
 //Muntref_link
-export async function getMuntref_Link(id){
-    const Muntref_LinkCol = collection(db,"MuseosPrueba/"+id+"/muntref_link")
+export async function getMuntref_Link(id,museosCol){
+    const Muntref_LinkCol = collection(db,museosCol+"/"+id+"/muntref_link")
     const snapshot = await getDocs(Muntref_LinkCol)
     
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateLink = (id,idLink,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+id+"/muntref_link/"+idLink),newFields)
+export const updateLink = (id,idLink,newFields,museosCol)=> updateDoc(doc(db,museosCol + '/'+id+"/muntref_link/"+idLink),newFields)
 
-//Muntref_Link/Linkmp
+//Muntref_Link/linksmp
 
-export async function getLinkmp(idMuseo,idLink){
+export async function getlinksmp(idMuseo,idLink,museosCol){
     console.log(idMuseo,idLink)
-    const LinkCol = collection(db,"MuseosPrueba/"+idMuseo+"/muntref_link/"+idLink+"/linksmp")
+    const LinkCol = collection(db,museosCol+"/"+idMuseo+"/muntref_link/"+idLink+"/linksmp")
     const snapshot = await getDocs(LinkCol)
     
     // console.log(snapshot.docs.map((documento)=>({...documento.data(),id:documento.id})))
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateLinkmp = (idMuseo,idLink,idLinkmp,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+idMuseo+"/muntref_link/"+idLink+"/linksmp/"+idLinkmp),newFields)
+export const updatelinksmp = (idMuseo,idLink,idlinksmp,newFields,museosCol)=> updateDoc(doc(db,museosCol + '/'+idMuseo+"/muntref_link/"+idLink+"/linksmp/"+idlinksmp),newFields)
 //Recorrido
-export async function getRecorrido(id){
-    const RecorridoCol = collection(db,"MuseosPrueba/"+id+"/recorrido")
+export async function getRecorrido(id,museosCol){
+    const RecorridoCol = collection(db,museosCol+"/"+id+"/recorrido")
     const snapshot = await getDocs(RecorridoCol)
     
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateRecorrido = (id,idRecorrido,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+id+"/recorrido/"+idRecorrido),newFields)
+export const updateRecorrido = (id,idRecorrido,newFields,museosCol)=> updateDoc(doc(db,museosCol + '/'+id+"/recorrido/"+idRecorrido),newFields)
 
 //Recorrido/Recursos
 
-export async function getRecursos(idMuseo,idRecorrido){
+export async function getRecursos(idMuseo,idRecorrido,museosCol){
     
-    const recursosCol = collection(db,"MuseosPrueba/"+idMuseo+"/recorrido/"+idRecorrido+"/recursos")
+    const recursosCol = collection(db,museosCol+"/"+idMuseo+"/recorrido/"+idRecorrido+"/recursos")
     const snapshot = await getDocs(recursosCol)
     // console.log(idRecorrido)
     // console.log(snapshot.docs.map((documento)=>({...documento.data(),id:documento.id})))
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateRecurso = (idMuseo,idRecorrido,idRecurso,newFields)=> updateDoc(doc(db,"MuseosPrueba/"+idMuseo+"/recorrido/"+idRecorrido+"/recursos/"+idRecurso),newFields)
+export const updateRecurso = (idMuseo,idRecorrido,idRecurso,newFields,museosCol)=> updateDoc(doc(db,museosCol + "/"+idMuseo+"/recorrido/"+idRecorrido+"/recursos/"+idRecurso),newFields)
 // Recorrido/muestras
-export async function getMuestras(idMuseo,idRecorrido){
+export async function getMuestras(idMuseo,idRecorrido,museosCol){
     
-    const muestrasCol = collection(db,"MuseosPrueba/"+idMuseo+"/recorrido/"+idRecorrido+"/muestras")
+    const muestrasCol = collection(db,museosCol+"/"+idMuseo+"/recorrido/"+idRecorrido+"/muestras")
     const snapshot = await getDocs(muestrasCol)
     
     console.log(snapshot.docs.map((documento)=>({...documento.data(),id:documento.id})))
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateMuesta = (id,idRecorrido,idMuestra,newFields)=> {
+export const updateMuesta = (id,idRecorrido,idMuestra,newFields,museosCol)=> {
     console.log(id,idRecorrido,idMuestra,newFields)
-    // updateDoc(doc(db,"MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra),newFields)
-    updateDoc(doc(db,"MuseosPrueba/"+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra),newFields)
+    // updateDoc(doc(db,museosCol + '/'+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra),newFields)
+    updateDoc(doc(db,museosCol + '/'+id+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra),newFields)
     
     console.log()
 }
 
-export async function getObras(idMuseo,idRecorrido,idMuestra){
+export async function getObras(idMuseo,idRecorrido,idMuestra,museosCol){
     
-    const obrasCol = collection(db,"MuseosPrueba/"+idMuseo+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+"/obrasimg")
+    const obrasCol = collection(db,museosCol+"/"+idMuseo+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+"/obrasimg")
     const snapshot = await getDocs(obrasCol)
     
     return snapshot.docs.map((documento)=>({...documento.data(),id:documento.id}))
     
 }
-export const updateObra = (idMuseo,idRecorrido,idMuestra,idObra,newFields)=> {
+export const updateObra = (idMuseo,idRecorrido,idMuestra,idObra,newFields,museosCol)=> {
     console.log(idMuseo,idRecorrido,idMuestra,idObra,newFields)
-    updateDoc(doc(db,"MuseosPrueba/"+idMuseo+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+"/obrasimg/"+idObra),newFields)
+    updateDoc(doc(db,museosCol + '/'+idMuseo+"/recorrido/"+idRecorrido+"/muestras/"+idMuestra+"/obrasimg/"+idObra),newFields)
 }
 
 
-export async function getHighlights(){
+export const updateMuseum2 = (id,newFields,museosCol)=> updateDoc(doc(db,museosCol,id),newFields)
+
+
+export async function getHighlights(highCol){
     
     // const MuseosCol = collection(db,museo)
-    const HighlightsCol = collection(db,"highlight")
+    const HighlightsCol = collection(db,highCol)
     
-    // const BienvenidaCol = collection(db,"MuseosPrueba/"+id+"/bienvenido")
+    // const BienvenidaCol = collection(db,museosCol + '/'+id+"/bienvenido")
     // const BienvenidaCol = collection(db, "/"+museo+"/"+id+"/bienvenido")
     
     const snapshot = await getDocs(HighlightsCol)
@@ -687,8 +693,15 @@ export async function getHighlights(){
 
 
 
-export const updateHighlight = (id,newFields)=> updateDoc(doc(db,"highlight",id),newFields)
+export const updateHighlight = (id,newFields,highCol)=>{ 
+    console.log(highCol)
+    updateDoc(doc(db,highCol,id),newFields)
+}
 
+export const createHighlight = (highCol,idHigh,infoHigh)=>{
+    setDoc(doc(db,highCol,idHigh),infoHigh)
+}
+export const deleteHighlight = (highCol,idHigh)=>{
+    deleteDoc(doc(db, highCol ,idHigh))
+}
 
-
-export const updateMuseum2 = (id,newFields)=> updateDoc(doc(db,"MuseosPrueba",id),newFields)
