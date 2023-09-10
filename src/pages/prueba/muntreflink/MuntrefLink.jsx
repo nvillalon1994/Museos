@@ -27,6 +27,7 @@ import { obtenerMuseo } from '../../../features/museo/museoSlice'
 import { obtenerLinksmp } from '../../../features/Linksmp/linksmpSlice'
 import { storage } from '../../../firebase';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import PhoneCase from '../../../components/phonecase/PhoneCase'
 
 export default function Bienvenida({idMuseo}) {
   const [open,setOpen] = useState(false)
@@ -301,7 +302,7 @@ export default function Bienvenida({idMuseo}) {
           </div>}
 
 
-        {modalDelLink&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+        {modalDelLink&&<div className=' flex items-center justify-center absolute w-[100%] h-[93vh] z-50 bg-black bg-opacity-80'>
             <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
               <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalLink.nombrelink} ?</p>
               <div className='flex m-auto gap-5'>
@@ -317,11 +318,12 @@ export default function Bienvenida({idMuseo}) {
             </div>
             
           </div>}
-        <section className=' flex  justify-around '>
-        {!open&&<div className="relative flex  justify-between w-1/4 " >
+        <section className=' flex  justify-around items-center h-[92vh] w-max-full overflow-hidden '>
+
+        {!open&&<div className={` ${(Object.keys(link).length===0)&&"show-info-reco"}  `} >
               
-              <div className="bg-colo5-phone-gray  h-[590px] m-auto relative mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
-                  <div className="h-12 bg-black rounded-t-[34px] w-[285px] "></div>
+              <PhoneCase >
+                 
                   
                   <nav className="flex justify-between p-2 items-center ">
                   <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
@@ -339,7 +341,16 @@ export default function Bienvenida({idMuseo}) {
                     <h1 className='bg-colo6-phone-oringe text-xs text-center text-white py-2 font-semibold '>RECORRIDO VIRTUAL DEL MUSEO 360°</h1>
                     <p className='text-xs text-red-900 text-justify m-1'>Ingresando aqui, podrás recorrer virtualmente el {museo.nombre}. En cada imagen podrás descubrir el entorno simplemente deslizando tu dedo en cualquier dirección, y podrás entrar en los hotspots que cada lugar ofrece.</p>
                     {muntrefLinks.map((link)=>
-                    <div className='relative w-full 'onClick={()=>{tomarLink(link.id)}} >
+                    <div className='relative w-full 'onClick={()=>{
+                      // tomarLink(link.id)
+                      setLink({})
+                      setTimeout(() => {
+                        setBoton(true)
+                        setLink(link)
+                        
+                      }, 1);
+                    
+                    }} >
                       <div className='h-40 overflow-hidden relative flex justify-center'>
                         <img className='w-full absolute m-auto' src={link.imglink} alt="" />
                         
@@ -354,14 +365,14 @@ export default function Bienvenida({idMuseo}) {
                     
                   
   
-                  <div className="h-14 bg-black rounded-b-[34px] "></div>
-              </div>
+                  
+              </PhoneCase>
   
               </div>}
                 
-              {boton&&<button className='absolute w-1/6 top-20 right-16 bg-emerald-400 text-white text-xs bg-opacity-80 text-center py-1 z-40 ' 
+        {boton&&<button className='absolute w-1/6 top-20 right-16 bg-emerald-400 text-white text-xs bg-opacity-80 text-center py-1 z-40 ' 
                             onClick={()=>{cargarLinkmp(link.id)}} >Ver link del recorrido</button>}
-                  {link&&<form  onSubmit={editarLink} className='w-2/4 flex flex-col relative '>
+        {(Object.keys(link).length!==0)&&<form  onSubmit={editarLink} className='lg:w-3/4 w-4/5 md:w-3/4    scale-75 lg:scale-75 xl:scale-90 2xl:scale-100 show-info-reco-form flex flex-col relative '>
                         <h2 className='text-3xl text-center w-full mx-auto   text-white mt-6 '>Modifica a {link.nombrelink}</h2>
                         
                         <div className=' relative h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black mt-8'>

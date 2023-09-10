@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { lazy, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {  Link, useNavigate } from 'react-router-dom'
 import { obtenerMuseos } from '../features/museos/museosSlice'
@@ -419,7 +419,7 @@ export default function Home() {
                                   </div>
                                   
                                 </div>
-                      {/* <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300' >Subir {banner.id}</button> */}
+                      
                                 
                             </div>      
                         </div>
@@ -429,13 +429,13 @@ export default function Home() {
         <button className='text-white fixed top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={closeHighs}>X</button>
         </div>
       </div>}
-        <nav className='navBar '>
-            <p>Administrador</p>
-            <div className=" justify-between">
+        <nav className='flex justify-between items-center bg-colo7-phone-dark shadow-lg p-1P '>
+            <p className='text-colo6-phone-oringe text-shadow-lg font-medium text-lg ml-10'>Administrador</p>
+            <div className="flex justify-between gap-4">
                 
-                {usuario.rol==="admin" && <button className='btn-Ingresar'   onClick={traerHighs}>Highlights</button>}
+                {usuario.rol==="admin" && <button className='text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe  '   onClick={traerHighs}>Highlights</button>}
                 {usuario.rol==="admin" && 
-                <select className="btn-Ingresar " name="format" id="format" onChange={(event)=>{
+                <select className="text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe   " name="format" id="format" onChange={(event)=>{
                     changeMuseumsLanguage(event.target.value)
                     
                 }}>
@@ -447,20 +447,21 @@ export default function Home() {
                     
                 </select>
                 }
-                {usuario.rol==="admin" && <button className='btn-Ingresar'   onClick={()=>setOpen(!open)}>Crear un Museo</button>}
+                {usuario.rol==="admin" && <button className='text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe  '   onClick={()=>setOpen(!open)}>Crear un Museo</button>}
                 
-                {/* <Link  className='btn-Ingresar' onClick={signOut(auth)} to={"/"}>Cerrar Sesión1</Link> */}
-                {/* <Link  className='btn-Ingresar' onClick={()=>{signOut(auth)}} to={"/"}>Cerrar Sesión2</Link> */}
-                <button  className='btn-Ingresar' onClick={salir} >Cerrar Sesión</button>
                 
-                {/* <Link to={"/"}  className='btn-Ingresar' onClick={salir} >Cerrar Sesión3</Link> */}
+                <button  className='text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe  ' onClick={salir} >Cerrar Sesión</button>
+                {/* <button  className='bg-colo5-phone-gray p-2 rounded-md shadow-md text-white hover:shadow-sm hover:text-orange-400 hover:shadow-amber-500 transition-all duration-300' onClick={salir} >Cerrar Sesión</button> */}
+                
+                
                     
             </div>
         </nav>
-        {open&&<div className='editFormDiv'>
-            <form onSubmit={crearMuseos} className="editForm form1">
-                <legend>Crea un Museo</legend>
-                <input type="text" name='museo' placeholder='Nombre de Museo'/>
+        {open&&<div className=' editFormDiv'>
+            <form onSubmit={crearMuseos} className=" editForm form1">
+                <legend className=''>Crea un Museo</legend>
+                <input type="text" name='museo' placeholder='Nombre de Museo' />
+                
                 <button className='btn-submitForm'>Crear Museo</button>
                 <button className="btn-Delete" onClick={()=>setOpen(!open)}>X</button>
             </form>
@@ -498,32 +499,23 @@ export default function Home() {
         
         </div>}
         
-        {/* <nav>
-            <p>LogoTipo</p>
-            <div>
-                <button className='btn-Ingresar'   onClick={()=>setOpen(!open)}>Crear un Equipo</button>
-                <Link to={"/"} className='btn-Ingresar' onClick={signOut(auth)}>Cerrar Sesión</Link>
-                
-            </div>
-            
-        </nav> */}
-        <h1 id='titulo'>Museos</h1>
+        
+        <h1 id='titulo' className='mt-6'>Museos</h1>
         
         {usuario.rol==="admin"&&
-        <div className='grid grid-cols-3 gap-4 justify-around max-w-7xl m-auto mt-10 '>
+        <div className='grid lg:grid-cols-3 grid-cols-2  justify-around  mx-3 mt-6 '>
             
             {museos?.map((e)=>
             
-                <div  key={e.id} className='relative rounded-md bg-colo7-phone-dark p-2 shadow-lg shadow-black ' >
-                    <img src={e.imgmain} alt="" />
-                    <div className='flex justify-around items-center h-20'>
+                <div  key={e.id} className='relative rounded-md bg-colo7-phone-dark p-1 shadow-lg shadow-black m-5 ' >
+                    <img loading="lazy" src={e.imgmain} alt="" className='rounded-md'/>
+                    <div className='flex justify-around items-center h-20 p-2 gap-2'>
                         <h1 className='w-2/3 text-white font-bold '>{e.nombre}</h1>
-                        {/* <button className='btn-Ingresar' onClick={()=>{tomarMuseo2(e.id)}}>Ingresar a museo</button> */}
-                        <button className='text-center mx-auto bg-emerald-400  w-1/3 text-shadow-xl rounded-md py-2 text-white hover:text-shadow-none hover:bg-emerald-300' onClick={()=>{tomarMuseo1(e.id)}}>Ingresar a museo</button>
+                        
+                        <button className='text-center mx-auto bg-emerald-400 text-sm  w-1/3 text-shadow-xl rounded-md py-2  text-white hover:text-shadow-none hover:bg-emerald-300' onClick={()=>{tomarMuseo1(e.id)}}>Ingresar a museo</button>
                     </div>
                     
-                    {/* <button onClick={()=>{eliminarMuseo(e.id)}} className="absolute top-2 right-2 text-white  bg-red-500 p-2 rounded"><FontAwesomeIcon className='' icon={faTrash} /></button> */}
-                    {/* <button onClick={()=>{setOpen2(!open2)}} className="absolute top-2 left-2 text-white  bg-cyan-600 p-2 rounded"><FontAwesomeIcon className='' icon={faUserPlus} /></button> */}
+                    
                     
                 </div>)}
             

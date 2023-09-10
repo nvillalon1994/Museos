@@ -40,11 +40,11 @@ export default function NavBar() {
       <div className='flex  justify-between items-center max-w-7xl w-full m-auto  '>
       <Link to={"/phone_Prueba/"+museo.id}><p className='text-white font-semibold text-shadow-xl'>{museo.nombre}</p></Link>
         <div className='flex items-center gap-2 '>
-            {usuario.rol==="admin"&&<Link to={"/home"}  className='text-colo6-phone-oringe bg-colo5-phone-gray p-1 rounded-md shadow-gray-500 shadow-sm ' > Home</Link>}
+            {usuario.rol==="admin"&&<Link to={"/home"}  className='text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe  ' > Home</Link>}
             
             {/* <Link  className='btn-Ingresar' onClick={signOut(auth)} to={"/"}>Cerrar Sesión1</Link> */}
             {/* <Link  className='btn-Ingresar' onClick={()=>{signOut(auth)}} to={"/"}>Cerrar Sesión2</Link> */}
-            <button  className='text-colo6-phone-oringe bg-colo5-phone-gray p-1 rounded-md shadow-gray-500 shadow-sm ' onClick={salir} >Cerrar Sesión</button>
+            <button  className='text-white p-2 border-r border-neutral-800 hover:text-colo6-phone-oringe hover:text-shadow-xl shadow-colo6-phone-oringe  ' onClick={salir} >Cerrar Sesión</button>
             
             {/* <Link to={"/"}  className='btn-Ingresar' onClick={salir} >Cerrar Sesión3</Link> */}
                 

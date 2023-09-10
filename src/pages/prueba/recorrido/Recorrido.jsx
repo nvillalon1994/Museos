@@ -7,6 +7,7 @@ import { obtenerRecorridos } from '../../../features/recorrido/recorridoSlice'
 import { createRecorrido, deleteRecorrido, updateRecorrido } from '../../../firebase'
 import ReactAudioPlayer from 'react-audio-player';
 import {FaArrowLeft} from 'react-icons/fa'
+import Qrgenerator from '../../../components/qr generator/Qr-generator'
 import {
     BiLogOutCircle,
     BiWorld,
@@ -28,8 +29,14 @@ import { obtenerMuseo } from '../../../features/museo/museoSlice'
 import { storage } from '../../../firebase';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { text } from '@fortawesome/fontawesome-svg-core'
-
+import Phonecase from '../../../components/phonecase/PhoneCase'
 export default function Recorrido({idMuseo}) {
+ 
+
+
+
+  
+
   const [open,setOpen] = useState(false)
   const [name,setName]=useState()
   const [recorrido,setrecorrido] = useState({})
@@ -173,7 +180,7 @@ export default function Recorrido({idMuseo}) {
   }
   
   // console.log(recorrido)
-  
+  console.log(recorrido)
   const dispatch = useDispatch()
   useEffect(()=>{
     
@@ -181,10 +188,12 @@ export default function Recorrido({idMuseo}) {
     dispatch(obtenerMuseo(id))
     
 },[dispatch])
+  const [animate,setAnimate]= useState()
   return (
     <Page>
-      <section className='flex justify-around  '>
-            {delRecorridoModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-[1000] bg-black bg-opacity-80'>
+      <section className='flex justify-around w-screen max-w-full h-[93vh] overflow-hidden  items-center '>
+            
+            {delRecorridoModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[93vh] z-[1000] bg-black bg-opacity-80'>
             <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
               <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {recorridoModal.id} ?</p>
               <div className='flex m-auto gap-5'>
@@ -200,7 +209,60 @@ export default function Recorrido({idMuseo}) {
             </div>
             
           </div>}
-            {!open&&<div className="relative flex justify-between w-1/4 ">
+
+
+
+            {!open&&<div className="show-info-reco fist-reco-phone  ">
+              
+                <Phonecase >
+                    
+                    <nav className="flex justify-between p-2 items-center">
+                    <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+                    <ul className="flex gap-6">
+                        <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
+                        <BsThreeDotsVertical />
+                        </li>
+                    </ul>
+                    </nav>
+                    <nav>
+                    <ul className="flex justify-between items-center w-full">
+                        <li className="text-white text-sm text-center w-1/2  ">
+                        <Link to={"/"+ id +"/Bienvenido"}>Acerca del museo</Link> 
+                        </li>
+                        <li className="text-colo6-phone-oringe text-sm w-1/2 text-center m-auto border-2 border-b-colo6-phone-oringe border-transparent">
+                        Recorrido
+                        </li>
+                    </ul>
+                    </nav>
+                    <div className='h-[424px] overflow-auto contenedor2 '>
+                      <h2 className='text-white text-xs mt-2 mb-6 mx-9'>{museo.nombre}</h2>
+                      <div className='grid grid-cols-2 gap-2 relative'>
+                      <Link className='absolute top-[-40px] left-2' to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe '><FaArrowLeft/></button></Link>
+                          {recorridos.map((recorrido)=>
+                          <div className='bg-emerald-400  relative h-[120px] overflow-hidden ' >
+                              <div onClick={()=>{tomarrecorrido(recorrido)}}>
+                                <p className='text-center text-white'>{recorrido.nombrereco}</p>
+                                <img loading='lazy' className='' src={recorrido.imgreco} alt=""  />
+                              </div>
+                              
+                              <button className='text-white bg-red-400 hover:bg-red-500 w-5 h-5  text-sm absolute top-0 right-0 z-40' onClick={()=>{delRecorrido(recorrido)}}>X</button>
+                          </div>
+                          )}
+                          <form onSubmit={crearRecorrido} className='bg-emerald-400 mb-4 ' >
+                              <input type="text" placeholder='Nombre del recorrido' className='w-32' name="name" /> 
+                              <button className='text-center text-white '>Nuevo Recorrido</button>
+                              
+                          </form>
+                          
+                      </div>
+                    </div>
+                    
+                    
+                </Phonecase>
+
+            </div>}
+            {/* {!open&&<div className="show-info-reco scale-50 lg:scale-75 xl:scale-90 2xl:scale-100 fist-reco-phone  ">
+              
                 <div className="bg-colo5-phone-gray relative h-[590px]  m-auto  mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
                     <div className="h-12 bg-black rounded-t-[34px] w-[285px]  "></div>
                     <nav className="flex justify-between p-2 items-center">
@@ -226,10 +288,13 @@ export default function Recorrido({idMuseo}) {
                       <div className='grid grid-cols-2 gap-2 relative'>
                       <Link className='absolute top-[-40px] left-2' to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe '><FaArrowLeft/></button></Link>
                           {recorridos.map((recorrido)=>
-                          <div className='bg-emerald-400  relative h-[120px] overflow-hidden 'onClick={()=>{tomarrecorrido(recorrido)}} >
-                              <p className='text-center text-white'>{recorrido.nombrereco}</p>
-                              <img className='' src={recorrido.imgreco} alt=""  />
-                              <button className='text-white bg-red-500 text-sm absolute top-0 right-0 z-40' onClick={()=>{delRecorrido(recorrido)}}>X</button>
+                          <div className='bg-emerald-400  relative h-[120px] overflow-hidden ' >
+                              <div onClick={()=>{tomarrecorrido(recorrido)}}>
+                                <p className='text-center text-white'>{recorrido.nombrereco}</p>
+                                <img loading='lazy' className='' src={recorrido.imgreco} alt=""  />
+                              </div>
+                              
+                              <button className='text-white bg-red-400 hover:bg-red-500 w-5 h-5  text-sm absolute top-0 right-0 z-40' onClick={()=>{delRecorrido(recorrido)}}>X</button>
                           </div>
                           )}
                           <form onSubmit={crearRecorrido} className='bg-emerald-400 mb-4 ' >
@@ -244,12 +309,70 @@ export default function Recorrido({idMuseo}) {
                     <div className="h-14 bg-black rounded-b-[34px] w-[286px] absolute bottom-0 z-70"></div>
                 </div>
 
-            </div>}
+            </div>} */}
+
+
+
             {/* {open&&<div className=" flex items-center text-3xl ">
             <BsArrowRightSquareFill />
             </div>} */}
             {/* SEGUNDA PANTALLA */}
-            {open&&<div className="relative flex justify-between w-1/4  ">
+            {open&&
+            
+                <Phonecase >
+                    
+                    <nav className="flex justify-between p-2 items-center">
+                    <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+                    <ul className="flex gap-6">
+                        <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
+                        <BsThreeDotsVertical />
+                        </li>
+                    </ul>
+                    </nav>
+                    <nav>
+                    <ul className="flex justify-between items-center w-full ">
+                        <li className="text-colo6-phone-oringe text-sm text-center w-1/2 border-2 border-b-colo6-phone-oringe border-transparent  ">
+                        Muestas
+                        </li>
+                        <Link className='w-1/2' to={"/"+id+"/recorrido/"+recorrido.id+"/recursos"}><li className="text-white text-sm  text-center m-auto ">Amplía tu recorrido</li></Link>
+                    </ul>
+                    </nav>
+                    
+                    <div className='relative h-[426px]'>
+                    <button className='text-colo6-phone-oringe absolute top-4 left-4 z-20' onClick={()=>{setOpen(false)
+                    setrecorrido({})
+                    }}><FaArrowLeft/></button>
+                        <div className='max-h-[200px] h-[200px] overflow-hidden flex relative '>
+                          
+                          <img className='absolute top-[-40px] ' src={recorrido.imgreco} alt="" />
+                        </div>
+                        <div className=" flex justify-around  w-full my-1">
+                            <ReactAudioPlayer
+                            src={recorrido.audioreco}
+                            autoPlay={false}
+                            controls
+                            style={{textEmphasisColor:"red"}}
+                            />
+                        </div>
+                        <div className='overflow-auto h-[120px] contenedor '>
+                            <p className='text-white font-semibold text-center text-sm my-2 '>{recorrido.nombrereco}</p>
+                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco}</p>
+                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco2}</p>
+                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco3}</p>
+                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco4}</p>
+                            <p className='text-white text-sm mx-2 mb-2 text-justify'>{recorrido.colorreco5}</p>
+                        </div>
+                        <div>
+                            <Link to={"/"+id+ "/recorrido/"+recorrido.id+"/muestras"}><button className='w-full '><GoTriangleUp className='text-center w-full text-white bg-colo6-phone-oringe'/></button></Link>
+                            <p className='text-white text-sm'>Muestras:</p>
+                        </div>
+                    </div>
+                    
+                </Phonecase>
+
+            
+            }
+            {/* {open&&<div className="scale-50 lg:scale-75 xl:scale-90 2xl:scale-100 relative flex justify-between w-1/4  ">
                 <div className="bg-colo5-phone-gray relative h-[590px] m-auto  mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
                     <div className="h-12 bg-black rounded-t-[34px] w-[285px]"></div>
                     <nav className="flex justify-between p-2 items-center">
@@ -270,7 +393,9 @@ export default function Recorrido({idMuseo}) {
                     </nav>
                     
                     <div className='relative h-[426px]'>
-                    <button className='text-colo6-phone-oringe absolute top-4 left-4' onClick={()=>{setOpen(false)}}><FaArrowLeft/></button>
+                    <button className='text-colo6-phone-oringe absolute top-4 left-4 z-20' onClick={()=>{setOpen(false)
+                    setrecorrido({})
+                    }}><FaArrowLeft/></button>
                         <div className='max-h-[200px] h-[200px] overflow-hidden flex relative '>
                           
                           <img className='absolute top-[-40px] ' src={recorrido.imgreco} alt="" />
@@ -299,11 +424,15 @@ export default function Recorrido({idMuseo}) {
                     <div className="h-14 bg-black rounded-b-[34px] w-[286px]  bottom-0 z-70"></div>
                 </div>
 
-            </div>}
+            </div>} */}
+             
             
-            {recorrido&&
-                    <form  onSubmit={editarrecorrido} className='w-2/4 flex flex-col'>
-                        <h2 className='text-3xl text-center w-full m-auto  text-white my-6'>Modifica a {recorrido.nombrereco}</h2>
+            <form  onSubmit={editarrecorrido} className={`flex flex-col lg:w-3/4 w-4/5 md:w-3/4    scale-75 lg:scale-75 xl:scale-90 2xl:scale-100 show-info-reco-form ${(Object.keys(recorrido).length===0)&&"hidden"}`}>
+                        
+                          <h2 className='text-3xl w-full m-auto text-center  text-white my-6'>Modifica a {recorrido.nombrereco}</h2>
+                          
+                          
+                        
                         
                         <div className='h-[500px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
                             <div className='h-full  flex flex-col gap-12 mt-5 w-1/2 px-10'>
@@ -360,7 +489,7 @@ export default function Recorrido({idMuseo}) {
                         
                         <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'>Actualizar recorrido</button>
                 
-                    </form>}
+            </form>
       </section>
       
         

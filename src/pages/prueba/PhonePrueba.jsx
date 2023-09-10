@@ -36,6 +36,8 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { storage } from "../../firebase";
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import LoadingAnimation from "../../components/Loading";
+import PhoneCase from "../../components/phonecase/PhoneCase";
 
 
 
@@ -58,11 +60,6 @@ export default function PhonePrueba({idMuseo}) {
     
     const [emblaRef, emblaApi] = useEmblaCarousel(options, [autoplay.current]);
     
-  
-    
-  
-  
-  
     
     const dispatch = useDispatch()
     const {museos} = useSelector(state=>state.museos)
@@ -178,105 +175,27 @@ export default function PhonePrueba({idMuseo}) {
 
   return (
     <Page>
-      {open&&
-      <div className="absolute bg-black bg-opacity-70 h-screen w-full top-0 z-10 flex flex-col items-center justify-center " >
-        <div className='flex justify-between bg-colo5-phone-gray w-4/5 h-[660px] overflow-auto contenedor relative rounded-lg '>
-          {/* <div className="p-2">
-            {highlights.map((high)=><div className="flex flex-col my-2"  onClick={()=>{tomarHigh(high.id)}}>
-              <img className="w-[300px]" src={high.urlhighlight} alt="" />
-            </div>)}
-          </div> */}
-          
-          {/* {banner&&<form onSubmit={editarBanner} action="" className='w-1/3 flex flex-col fixed right-60 top-0'>
-          <h2 className='text-3xl text-center w-full m-auto  text-white my-6'>Modifica a {banner.id}</h2>
-                        
-                         <div className='h-[480px] bg-colo7-phone-dark w-11/12 flex justify-around mx-auto p-5 rounded-t-xl shadow-xl shadow-black '>
-                            <div className='h-full  flex flex-col gap-12 mt-5 '>
-                                
-                                <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="hidden" name='idBanner' defaultValue={banner.id} />
-                                <div className='flex flex-col gap-1'>
-                                    <label className='text-white  font-semibold' htmlFor="audioreco">Texto 1</label>
-                                    <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-60 " type="text" name='htext1' defaultValue={banner.htext1} />
-                                </div>
-                                <div className='flex flex-col gap-1'>
-                                    <label className='text-white  font-semibold' htmlFor="nombrereco">Texto 2</label>
-                                    <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='htext2' defaultValue={banner.htext2}/>
-                                </div>
-                                <div className='flex flex-col gap-1'>
-                                    <label className='text-white  font-semibold' htmlFor="imgreco">Banner</label>
-                                    <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='urlhighlight' defaultValue={banner.urlhighlight}/>
-                                </div>
-                                
-                            </div>      
-                        </div>
-                        
-                        <button className='text-center mx-auto bg-emerald-400 p-4 w-11/12 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'>Actualizar Banner</button> 
-          </form>} */}
-        <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={()=>{setOpen(false)}}>X</button>
-        </div>
-      </div>}
+      
       {loading&&
-      <div className="flex justify-center my-[15%] " >
-       <div className="loading">
-        <div className="dot">C</div>
-        <div className="dot">A</div>
-        <div className="dot">R</div>
-        <div className="dot">G</div>
-        <div className="dot">A</div>
-        <div className="dot">N</div>
-        <div className="dot">D</div>
-        <div className="dot">O</div>
-        
-        <span className=" text text-white">Please wait...</span>
-      </div>
-     </div>
+        <LoadingAnimation/>
       }
-      {!loading&&<section className=" flex justify-around ">
+      
+      {!loading&&<section className=" flex justify-around  items-center h-[92vh]">
         
-        <div className="relative flex justify-between  w-1/4 ">
+        {/* <div className="relative flex justify-between  w-1/4 scale-50 lg:scale-75 xl:scale-90 2xl:scale-100 items-center ">
           <div className="bg-colo5-phone-gray h-[590px] m-auto  mt-10 w-[286px] rounded-[34px] z-0   border-black border-[1px] shadow-xl shadow-black ">
             <div className="h-12 bg-black rounded-t-[34px] w-[285px]"></div>
             <nav className="flex justify-between p-2 items-center">
               <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
               <ul className="flex gap-6">
-                {/* <li className="text-colo6-phone-oringe text-lg">
-                  <BiWorld />
-                </li>
-                <li className="text-colo6-phone-oringe text-lg">
-                  <HiOutlineMail />
-                </li> */}
+                
                 <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
                   <BsThreeDotsVertical />
                 </li>
               </ul>
             </nav>
-            {/* <nav className="w-full flex ">
-              <ul className="flex justify-between  w-full ">
-                <li className="text-colo6-phone-oringe text-2xl w-1/4  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
-                  <RiHome2Line className="m-auto mb-1" />
-                </li>
-                <li className="text-colo6-phone-oringe text-2xl w-1/4 ">
-                  <BsFileText className="m-auto" />
-                </li>
-                <li className="text-colo6-phone-oringe text-2xl w-1/4 ">
-                  <AiOutlineBank className="m-auto" />
-                </li>
-                <li className="text-colo6-phone-oringe text-2xl  w-1/4 ">
-                  <AiOutlineUpSquare className="m-auto" />
-                </li>
-              </ul>
-            </nav> */}
-            {/* <div className="mt-1 mb-2 px-2 relative h-36 ">
-              <button className="absolute bottom-0 right-2 text-white p-2 text-sm bg-opacity-80 bg-emerald-400 rounded z-30" onClick={()=>{setOpen(!open)}}>Modificar Highlights</button>
-              
-              <Carousel showArrows={true}  showStatus={false} showIndicators={false}  showThumbs={false} swipeable={true} infiniteLoop={true} autoPlay={true} transitionTime={1000} interval={2000}>
-                {highlights.map((high)=><div>
-                  <img src={high.urlhighlight} alt="" />
-                </div>)}
-              </Carousel>
-                
-              
-            </div> */}
+            
+            
             <div className="max-h-10">
               <Link to={"/home"}> 
                 <FaArrowLeft className="text-orange-400 m-4" />
@@ -306,53 +225,91 @@ export default function PhonePrueba({idMuseo}) {
                 <button className=" text-center w-full ">Recorrido Virtual</button>
               </Link>}
 
-                {/* <button className=" bg-colo6-phone-oringe bg-opacity-85 text-white text-[9px] rounded-md h-10 w-1/3">
-                  
-                  Recorrido
-                </button> */}
-                {/* <button className=" bg-red-600 bg-opacity-85 text-white text-[9px] rounded-md h-10 w-1/3">
-                  Recorrido Vitual
-                </button> */}
+                
               </div>
 
-              {/* <img className=" border-2 border-emerald-400 w-[275px] h-[152px] m-auto " src={fondo}  alt="" /> */}
+              
               
             </div>
-            {/* <div className="mx-2 bg-black mt-2 h-12 flex items-center gap-10 rounded-lg">
-              <AiOutlineUpSquare className="text-colo6-phone-oringe text-3xl ml-10 " />
-              <h4 className="text-white text-sm">Modo Museo</h4>
-            </div>
-            <div className="mx-2 bg-emerald-400 mt-2 mb-2 h-12 flex items-center gap-10 rounded-lg">
-              <h4 className="text-white text-xs m-auto">
-                Reservá tu visita al museo
-              </h4>
-            </div> */}
+            
             
             <div className="h-12  bg-black rounded-b-[34px] w-[285px]"></div>
+          
+          
+          
           </div>
-          </div>
+        </div> */}
+        <PhoneCase>
+            <nav className="flex justify-between p-1 items-center border-t-2 border-t-colo5-phone-gray">
+              <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+              <ul className="flex gap-6">
+                
+                <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
+                  <BsThreeDotsVertical />
+                </li>
+              </ul>
+            </nav>
+            
+            
+            <div className="max-h-10">
+              <Link to={"/home"}> 
+                <FaArrowLeft className="text-orange-400 m-4" />
+              </Link>
+              
+            </div>
+            <div className="">
+              
+              <img className="  w-[275px] h-[152px] mx-auto " src={museo.imgmuseo}  alt="" />
+            </div>
+            <div className="h-[150px]  overflow-y-auto" >
+              <p className="text-sm text-white font-medium tracking-normal">{museo.nombre}</p>
+              {/* <p className="text-sm text-white">{museo.descripcion}</p> */}
+              <p className="text-[12px] text-white font-mono tracking-wide">Dirección: {museo.direccion}</p>
+              <p className="text-[12px] text-white font-mono tracking-wide">Horario: {museo.horario}</p>
+              
+            </div>
+            <div className="mt-1  flex items-center   py-8 relative bg-opacity-60 z-50">
+              <div className=" flex justify-between  gap-2  w-full px-2 bottom-2  z-20 ">
+              <Link className={"border-emerald-400 border text-emerald-400 bg-opacity-85  text-[9px] flex items-center  rounded-md h-9 w-[100%]"}   to={"/"+ id +"/Bienvenido"}> 
+                <button className=" text-center w-full">Acerca del Museo</button>
+              </Link>
+              <Link className="border-colo6-phone-oringe border text-colo6-phone-oringe   bg-opacity-80  text-[9px] flex items-center  rounded-md h-9 w-[100%]"   to={"/"+ id +"/Recorrido"}> 
+                <button className=" text-center w-full ">Recorrido</button>
+              </Link>
+              {museo.tressesenta&&<Link className="border-white border text-white  bg-opacity-85  text-[9px] flex items-center  rounded-md h-9 w-[100%]"   to={"/"+ id +"/MuntrefLink"}> 
+                <button className=" text-center w-full ">Recorrido Virtual</button>
+              </Link>}
+
+                
+              </div>
+
+              
+              
+            </div>
+            
+        </PhoneCase>
           <form 
            onSubmit={crearMuseoEditado}
-            className='w-1/2 flex flex-col '>
+            className='lg:w-3/4 w-4/5 md:w-/6 flex flex-col scale-75 lg:scale-75 xl:scale-90 2xl:scale-100 '>
                             <h2 className="text-3xl text-center text-white my-8">Modifica a {museo.nombre}</h2>
                             
-                            <div className='h-[450px] bg-colo7-phone-dark w-4/5 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black '>
-                                <div className='h-full  flex flex-col gap-6 mt-5'>
-                                    <div className="flex flex-col gap-1">
+                            <div className='h-[450px] bg-colo7-phone-dark w-4/5 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black  gap-10'>
+                                <div className='h-full  flex flex-col gap-6 mt-5 w-1/2 px-4'>
+                                    <div className="flex flex-col gap-1 w-full">
                                         <label className="text-white" htmlFor="nombre">Nombre del Museo</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='nombre' defaultValue={museo.nombre}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full " type="text" name='nombre' defaultValue={museo.nombre}/>
                                     </div>
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 w-full">
                                         <label className="text-white" htmlFor="direccion">Direccion</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='direccion' defaultValue={museo.direccion}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='direccion' defaultValue={museo.direccion}/>
                                     </div>
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 w-full">
                                         <label className="text-white" htmlFor="horario">Horario</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='horario' defaultValue={museo.horario}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='horario' defaultValue={museo.horario}/>
                                     </div>
-                                    <div className="flex flex-col gap-1">
+                                    <div className="flex flex-col gap-1 w-full">
                                         <label className="text-white" htmlFor="imgmain">ImgMain</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgmain' defaultValue={museo.imgmain}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='imgmain' defaultValue={museo.imgmain}/>
                                         <div className="relative h-5">
                                           <div className="absolute z-[0] top-[1px] left-[0px] bg-cyan-400 bg-opacity-70 px-2 py-[2px] text-white">Seleccionar archivo</div>
                                           <input className=" absolute z-[1] top-[1px] left-[0px] w-40 opacity-0" type="file" onChange={subir} onClick={()=>{setName("imgmain")}}  />
@@ -362,10 +319,10 @@ export default function PhonePrueba({idMuseo}) {
 
                                         
                                 </div>
-                                <div className='h-full  flex flex-col gap-6 mt-5'>
-                                <div className="flex flex-col gap-1">
+                                <div className='h-full  flex flex-col gap-6 mt-5 w-1/2 px-4'>
+                                <div className="flex flex-col gap-1 w-full ">
                                         <label className="text-white" htmlFor="imgmuseo">Img Museo</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='imgmuseo' defaultValue={museo.imgmuseo}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='imgmuseo' defaultValue={museo.imgmuseo}/>
                                         <div className="relative h-5">
                                           <div className="absolute z-[0] top-[1px] left-[0px] bg-cyan-400 bg-opacity-70 px-2 py-[2px] text-white">Seleccionar archivo</div>
                                           <input className=" absolute z-[1] top-[1px] left-[0px] w-40 opacity-0" type="file" onChange={subir} onClick={()=>{setName("imgmuseo")}}  />
@@ -374,24 +331,24 @@ export default function PhonePrueba({idMuseo}) {
                                     </div>
                                     <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="descripcion">Descripcion</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='descripcion' defaultValue={museo.descripcion}/>
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='descripcion' defaultValue={museo.descripcion}/>
                                     </div>
-                                    <div className="flex flex-col gap-1">
+                                    {/* <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="logomuseo">Logo Museo</label>
                                         <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='logomuseo' defaultValue={museo.logomuseo}/>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
+                                    </div> */}
+                                    {/* <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="acerca">Acerca</label>
                                         <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='acerca' defaultValue={museo.Acerca} />
-                                    </div>
+                                    </div> */}
                                     <div className="flex flex-col gap-1">
                                         <label className="text-white" htmlFor="organizacion">Organización</label>
-                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md" type="text" name='organizacion' defaultValue={museo.organizacion}/>    
+                                        <input className="bg-colo5-phone-gray text-white p-1 rounded-md w-full" type="text" name='organizacion' defaultValue={museo.organizacion}/>    
                                     </div>
                                 
                                 </div>
                             </div>
-                            {/* <button className='btn-Delete' onClick={()=>{setOpen(false)}}>X</button> */}
+                            
                             <button className='text-center mx-auto bg-emerald-400 p-4 w-4/5 text-shadow-xl rounded-b-xl text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar Museo</button>
                     
                         </form>

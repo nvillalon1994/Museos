@@ -63,7 +63,7 @@ export async function createLayer(id,idLayer,museosCol){
         audiolayer:"https://firebasestorage.googleapis.com/v0/b/museum-view-test.appspot.com/o/audioguias%2FViaje%20videos%20marcelo%20tango.mp3?alt=media&token=813e2361-c6ed-493f-b016-82315f7c2e1a",
         es360:"si",
         imglayer:"https://images.unsplash.com/photo-1617257118084-339d30c49b02?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
-        end:"end",
+        
         nombrelayer:"nombrelayer",
         textolayer:"textolayer",
         textolayer2:"textolayer2",
@@ -170,13 +170,13 @@ export async function createMuestra(id,idRecorrido,idMuestra,nombre,museosCol){
         descmuestra3:"descmuestra3",
         descmuestra4:"descmuestra4",
         descmuestra5:"descmuestra5",
-        gallery:true,
-        historiadevida:true,
+        gallery:false,
+        historiadevida:false,
         imgautor:"https://images.unsplash.com/photo-1613483811459-1c4bb7a234f6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
         imgmuestra:"https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80",
         infoautor:"infoautor",
         nombremuestra:nombre,
-        vid:"vid"
+        vid:false
 
     }
     const infoObra ={
@@ -223,7 +223,7 @@ export async function createRecurso(id,idRecorrido,idRecurso,nombre,museosCol){
         recutextobottom4:"recutextobottom4",
         recutextobottom5:"recutextobottom5",
         recutitulo:nombre,
-        recuvid:"recuvid"
+        
     }
     setDoc(doc(db,museosCol + '/'+id+'/recorrido/'+idRecorrido+'/recursos',idRecurso),infoRecurso)
 }
@@ -285,7 +285,7 @@ export async function createMuseums(id,museosCol){
         logomuseo:"LOGO",
         nombre:id,
         organizacion:"Untref",
-        reco:"reco",
+        reco:true,
         tressesenta:true
     }
     

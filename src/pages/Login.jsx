@@ -53,7 +53,7 @@ export default function Login() {
       e.preventDefault()
       const email = e.target.elements.email.value
       const password = e.target.elements.password.value
-      
+      console.log(email,password)
       
       
       if (isRegistrando){

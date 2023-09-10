@@ -34,6 +34,7 @@ import { obtenerPanoramas } from '../../../features/360/360Slice';
 import NavBar from '../../../components/NavBar';
 import { storage } from '../../../firebase';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import PhoneCase from '../../../components/phonecase/PhoneCase';
 
 export default function Bienvenido({idMuseo}) {
   const [open,setOpen] = useState(false)
@@ -262,13 +263,21 @@ export default function Bienvenido({idMuseo}) {
   const tomarPanorama = (id) => {
     console.log(id)
     console.log(panoramas)
-    panoramas.map((e) => {
-      if (e.id === id) {
-        console.log("son iguales");
-        
-        setPan(e)
-      }
-    });
+
+    setPan({
+      id:"",
+      panorama:""
+    })
+    setTimeout(() => {
+      panoramas.map((e) => {
+        if (e.id === id) {
+          console.log("son iguales");
+          
+          setPan(e)
+        }
+      });
+      
+    }, 500);
   };
   
   
@@ -363,10 +372,11 @@ export default function Bienvenido({idMuseo}) {
     dispatch(obtenerMuseo(id))
 
 },[dispatch])
+  console.log(pan)
   return (
     <Page>
           
-          {deleteLayerModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-50 bg-black bg-opacity-80'>
+          {deleteLayerModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[93vh] z-50 bg-black bg-opacity-80'>
             <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
               <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalLayer.nombre}?</p>
               <div className='flex m-auto gap-5'>
@@ -382,7 +392,7 @@ export default function Bienvenido({idMuseo}) {
             
           </div>}
           
-          {deletePanoramaModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[90%] z-[1000] bg-black bg-opacity-80'>
+          {deletePanoramaModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[93vh] z-[1000] bg-black bg-opacity-80'>
             <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>
               <p className='text-white m-auto px-8 text-lg'>¿Esta seguro que desea eliminar {modalPanorama.id} ?</p>
               <div className='flex m-auto gap-5'>
@@ -397,28 +407,33 @@ export default function Bienvenido({idMuseo}) {
             </div>
             
           </div>}
+
+
+
           {openpan&&
-          <div className='absolute bg-black bg-opacity-70 h-screen w-full top-0 z-50 flex flex-col items-center justify-center '>
-              <div className='flex flex-col justify-between bg-colo5-phone-gray w-4/5 h-5/6 relative rounded-lg '>
-                 <div className='flex justify-center items-center mb-8'>
+          <div className='absolute bg-black bg-opacity-70 h-[92vh] w-full  z-50 flex flex-col items-center justify-center '>
+              <div className='flex flex-col bg-colo5-phone-gray w-full h-[92vh] relative rounded-lg gap-4 '>
+              <button onClick={crearPanorama} className="text-white bg-emerald-500 w-1/5 mx-auto mt-4 rounded-md p-1 hover:bg-emerald-300">Nuevo</button>
+                <div className='flex justify-center items-center flex-wrap'>
                     {panoramas.map((panorama)=>
                     
-                    <div className=' h-4/5  relative flex flex-col' >                     
-                      <img className='border-[1px] h-[200px]' src={Object.values(panorama)[0]} alt="" />
-                      
-                      <h1 className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white '>{panorama.id}</h1>
-                      <button onClick={()=>{tomarPanorama(panorama.id)}} className='absolute bottom-[-20px] right-0 bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
-                      <button onClick={(()=>{borrarPanorama({id:panorama.id,nombre:panorama})})} className=" absolute top-0 right-0 text-red-500 mx-2">x</button>
+                    <div className=' h-4/5 min-w-[25%] max-w-[25%] relative flex flex-col ' >                     
+                      <img className='border-[1px] h-[200px] object-fill' src={Object.values(panorama)[0]} alt="" />
+                      <div className='text-colo6-phone-oringe border-[1px] font-semibold text-center bg-white flex justify-between px-2 py-1 items-center'>
+                        <h1 className=' '>{panorama.id}</h1>
+                        <button onClick={()=>{tomarPanorama(panorama.id)}} className=' bg-color1-nav bg-opacity-70 text-white p-1 rounded-md m-1 hover:bg-opacity-100 hover:font-semibold'>Cambiar</button>
+                      </div>
+                      <button onClick={(()=>{borrarPanorama({id:panorama.id,nombre:panorama})})} className=" absolute top-0 right-0 text-white bg-red-400 h-6 w-6 rounded-sm ">x</button>
 
                     </div>
                  
                   )}
-                  <button onClick={crearPanorama} className="text-white">Nuevo</button>
                   </div>  
-                  <div className='flex justify-around w-full gap-2 h-60 px-2 pb-2'>
-                    <form onSubmit={editarPanorama} className="flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full   rounded-lg" >
+                  {(pan.panorama!=='')&&<div className='flex justify-around w-full gap-2 h-60 mt-10 '>
+                    
+                    <form onSubmit={editarPanorama} className="flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center  rounded-lg" >
                       
-                      <p className=' text-2xl text-white text-center font-semibold mt-3 w-96'>Modifica {pan.id} Subir archivo desde el ordenador</p>
+                      <p className=' text-xl text-white text-center font-semibold  w-96'>Modifica {pan.id} Subir archivo desde el ordenador</p>
                       <div 
                         className='contenedor2 w-60 overflow-auto rounded-lg '>
                                     
@@ -431,10 +446,10 @@ export default function Bienvenido({idMuseo}) {
                       <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300' >Subir {pan.id}</button>
                     </form>
                       
-                  {pan&&<form  
+                  <form  
                   onSubmit={editarPanorama}
                    className='  flex flex-col items-center bg-colo7-phone-dark w-1/2 h-full justify-center rounded-lg '>
-                        <h2 className='text-2xl text-white text-center font-semibold mb-2 w-96 '>Modifica {pan.id} mediante un url</h2>
+                        <p className='text-xl text-white text-center font-semibold  w-96 '>Modifica {pan.id} mediante un url</p>
                         
                         <div 
                         className='contenedor2 w-60 overflow-auto rounded-lg '
@@ -450,8 +465,8 @@ export default function Bienvenido({idMuseo}) {
                         
                         <button className='text-center w-60 mx-auto bg-emerald-400 p-4  text-shadow-xl rounded-xl my-2 text-white text-lg font-semibold hover:text-shadow-none hover:bg-emerald-300'  >Actualizar {pan.id}</button>
                 
-                    </form>}
-                    </div>
+                    </form>
+                  </div>}
                  <button className='text-white absolute top-0 right-0 bg-red-600 rounded-lg  h-8 w-8 ' onClick={cerrarPan}>X</button>
                  
               </div>
@@ -459,8 +474,70 @@ export default function Bienvenido({idMuseo}) {
 
           </div>}
           
-             <section className=' flex  justify-around'>
-            {!open&&<div className="relative flex justify-between w-1/4  ">
+
+
+             <section className=' flex  justify-around items-center h-[92vh] max-w-full overflow-hidden'>
+
+            {!open&&<div className="show-info-reco">
+              
+                <PhoneCase >
+              
+                  
+                  
+                  <nav className="flex justify-between p-2 items-center">
+                  <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+                  <ul className="flex gap-6">
+                      <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
+                      <BsThreeDotsVertical />
+                      </li>
+                  </ul>
+                  </nav>
+                  <nav>
+                  <ul className="flex justify-between items-center w-full">
+                      <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-transparent border-b-colo6-phone-oringe ">
+                        <Link to={""}>Acerca del museo</Link> 
+                      </li>
+                      <li className="text-white text-sm w-1/2 text-center m-auto">
+                      
+                      <Link to={"/"+ id +"/Recorrido"}>Recorrido</Link> 
+                      </li>
+                  </ul>
+                  </nav>
+                  <div className='h-[600px] overflow-auto contenedor'>
+                  <div className=" mb-2  flex  h-[200px] relative bg-opacity-60 z-50">
+                    <Link to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe absolute top-4 left-4'><FaArrowLeft/></button></Link>
+                    <img className="" src={museo.imgmuseo}  alt="" />
+                  </div>
+                  
+                  {bienvenido.map((layer)=>
+                  <div   className="relative  bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-sm">
+                    
+                    <h4 className="text-white text-xs " onClick={()=>{tomarLayer(layer.id)}}>{layer.nombrelayer}</h4>
+                    <button className=' text-white'><IoMdArrowDropdown  onClick={()=>{tomarLayer(layer.id)}}/></button>
+                    <button className='text-white  absolute right-0 z-90 text-md hover:text-red-500 p-1' onClick={()=>{borrarLayer({id:layer.id,nombre:layer.nombrelayer})}}><AiOutlineDelete/></button>
+                    
+                  </div>
+                  
+                  )}
+                  <div onClick={crearLayer} className=" mx-2 bg-emerald-400 mt-2  h-7 flex items-center justify-center rounded-sm  ">
+                    
+                    <h4 className="text-white text-xs hover:text-colo6-phone-oringe hover:text-shadow text-shadow-xl hover:shadow-white ">Nuevo</h4>
+                    <button className=' text-white'><IoMdArrowDropdown/></button>
+                  </div>
+                  </div>
+                  
+                  
+
+                  
+              
+
+                </PhoneCase>
+            </div>
+              
+
+            
+            }
+            {/* {!open&&<div className="show-info-reco scale-50 lg:scale-75 xl:scale-90 2xl:scale-100 relative flex justify-between w-1/4  ">
               
             <div className="bg-colo5-phone-gray  h-[590px] m-auto relative mt-10  w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
                 <div className="h-12 bg-black rounded-t-[34px] w-[285px] "></div>
@@ -512,16 +589,18 @@ export default function Bienvenido({idMuseo}) {
                 <div className="h-14 bg-black rounded-b-[34px] "></div>
             </div>
 
-            </div>}
+            </div>} */}
 
             {/* {open&&<div className=" flex items-center text-3xl">
             <BsArrowRightSquareFill />
             </div>} */}
             
 
-            {open?<div className="relative flex justify-between w-1/4  ">
-            <div className="bg-colo5-phone-gray h-[590px]  mt-10 m-auto left-52 w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
-                <div className="h-12 bg-black rounded-t-[34px] w-[285]"></div>
+            
+            {open&&<PhoneCase>
+                  
+                  
+                
                 <nav className="flex justify-between p-2 items-center">
                 <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
                 <ul className="flex gap-6">
@@ -532,7 +611,7 @@ export default function Bienvenido({idMuseo}) {
                 </nav>
                 <nav>
                 <ul className="flex justify-between items-center">
-                    <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
+                    <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-transparent border-b-colo6-phone-oringe ">
                       <Link to={""}>Acerca del museo</Link> 
                     </li>
                     <li className="text-white text-sm w-1/2 text-center m-auto">
@@ -553,7 +632,8 @@ export default function Bienvenido({idMuseo}) {
                 </div>
 
                 <div className=" relative mx-2 bg-emerald-400 mb-0 h-[330px] flex flex-col   rounded-md">
-                  <div className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-lg" onClick={()=>{setOpen(false)}}>
+                  <div className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-lg" onClick={()=>{setOpen(false)
+                  setLayer({})}}>
                     
                     <h4 className="text-white text-xs text-center  my-2" >
                       
@@ -622,12 +702,123 @@ export default function Bienvenido({idMuseo}) {
                 </div>
                 
 
+                
+            
+            </PhoneCase>
+            }
+            
+
+
+
+            {/* {open&&<div className="scale-50 lg:scale-75 xl:scale-90 2xl:scale-100 relative flex justify-between w-1/4  ">
+            <div className="bg-colo5-phone-gray h-[590px]  mt-10 m-auto left-52 w-[286px] rounded-[34px] z-0 border-[1px] border-black shadow-xl  shadow-black">
+                <div className="h-12 bg-black rounded-t-[34px] w-[285]"></div>
+                <nav className="flex justify-between p-2 items-center">
+                <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+                <ul className="flex gap-6">
+                    <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
+                    <BsThreeDotsVertical />
+                    </li>
+                </ul>
+                </nav>
+                <nav>
+                <ul className="flex justify-between items-center">
+                    <li className="text-colo6-phone-oringe text-sm text-center w-1/2  border-2 border-colo5-phone-gray border-b-colo6-phone-oringe ">
+                      <Link to={""}>Acerca del museo</Link> 
+                    </li>
+                    <li className="text-white text-sm w-1/2 text-center m-auto">
+                    
+                    <Link to={"/"+ id +"/Recorrido"}>Recorrido</Link> 
+                    </li>
+                </ul>
+                </nav>
+
+                <div className=" mb-2 px-1 flex  h-20 overflow-hidden relative bg-opacity-60 ">
+                <Link to={"/phone_prueba/"+ id}><button className='text-colo6-phone-oringe absolute top-4 left-4'><FaArrowLeft/></button></Link>
+                <img
+                    className="h-[200px]"
+                    src={museo.imgmuseo}
+                    
+                    alt=""
+                />
+                </div>
+
+                <div className=" relative mx-2 bg-emerald-400 mb-0 h-[330px] flex flex-col   rounded-md">
+                  <div className=" mx-2 bg-emerald-400 mt-2 mb-[10px] h-7 flex items-center justify-center rounded-lg" onClick={()=>{setOpen(false)
+                  setLayer({})}}>
+                    
+                    <h4 className="text-white text-xs text-center  my-2" >
+                      
+                      {layer.nombrelayer}
+                    </h4>
+                    <button className=' text-white'><IoMdArrowDropup/></button>
+                  </div>
+                  
+                  <div className='relative'>
+                  <img
+                    className="h-[80px] w-full"
+                    src={layer.es360}
+                    
+                    alt=""
+                  />
+                  <button className='absolute bg-black bg-opacity-80 text-sm bottom-0 right-1 w-32 text-center text-white' onClick={()=>{abrirPanoramas(id,layer.id)}} 
+                
+                >
+                  Vista 360°
+                </button>
+                </div>
+               
+                
+                
+                <div className=" flex justify-around  w-full my-2 h-20">
+                    
+                    
+                    
+                    <ReactAudioPlayer
+                      src={layer.audiolayer}
+                      autoPlay={false}
+                      controls
+                      style={{textEmphasisColor:"red"}}
+                    />
+                    
+                </div>
+                <div className='h-fit overflow-auto contenedor mb-[10px]'>
+                    <p className="text-white text-xs mx-2 text-justify mb-2">
+                        {layer.textolayer}
+                        
+                        
+                    </p>
+                    <p className="text-white text-xs mx-2 text-justify mb-2">
+                        {layer.textolayer2}
+                        
+                        
+                    </p>
+                    <p className="text-white text-xs mx-2 text-justify mb-2">
+                        {layer.textolayer3}
+                        
+                        
+                    </p>
+                    <p className="text-white text-xs mx-2 text-justify mb-2">
+                        {layer.textolayer4}
+                        
+                        
+                    </p>
+                    <p className="text-white text-xs mx-2 text-justify mb-2">
+                        {layer.textolayer5}
+                        
+                        
+                    </p>
+                </div>
+                
+                </div>
+                
+
                 <div className="h-12 mt-10 bg-black rounded-b-[34px] w-[285px] "></div>
             </div>
             
-            </div>:<></>}
+            </div>} */}
             
-            {layer&&<form  onSubmit={editarLayer} className='w-2/4  flex flex-col '>
+            {(Object.keys(layer).length!==0)&&<form  onSubmit={editarLayer} className='lg:w-3/4 w-4/5 md:w-3/4    scale-75 lg:scale-75 xl:scale-90 2xl:scale-100 show-info-reco-form  flex flex-col '>
                         <h2 className='text-3xl text-center w-full m-auto  text-white mt-6 '>Modifica a {layer.nombrelayer}</h2>
                         
                         <div className='h-auto bg-colo7-phone-dark w-11/12 flex justify-around mx-auto rounded-t-xl shadow-xl shadow-black  pb-4 '>
