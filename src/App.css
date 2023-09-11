@@ -721,3 +721,35 @@ select::-ms-expand {
   
   }
 }
+.text-museum::-webkit-scrollbar {
+  width: 4px;  
+  position: absolute;             /* width of the entire scrollbar */
+}
+
+.text-museum::-webkit-scrollbar-track {
+  background: transparent; 
+  position: absolute;          /* color of the tracking area */
+}
+
+.text-museum::-webkit-scrollbar-thumb {
+  background-color: #00BFE6;    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid #90f8f8;
+  position: absolute;     /* creates padding around scroll thumb */
+}
+.ctext-museum::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;     
+  background-color: rgb(175, 175, 175);  
+  border-radius: 0 0 15px 15px;
+}
+
+.ctext-museum::-webkit-scrollbar-track {
+  background: transparent;        /* color of the tracking area */
+}
+
+.ctext-museum::-webkit-scrollbar-thumb {
+  background-color: #00ffaa;    /* color of the scroll thumb */
+  border-radius: 20px;       /* roundness of the scroll thumb */
+   /* creates padding around scroll thumb */
+}

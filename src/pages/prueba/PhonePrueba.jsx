@@ -261,7 +261,7 @@ export default function PhonePrueba({idMuseo}) {
               
               <img className="  w-[275px] h-[152px] mx-auto " src={museo.imgmuseo}  alt="" />
             </div>
-            <div className="h-[150px]  overflow-y-auto" >
+            <div className="h-[180px]  overflow-y-auto text-museum " >
               <p className="text-sm text-white font-medium tracking-normal">{museo.nombre}</p>
               {/* <p className="text-sm text-white">{museo.descripcion}</p> */}
               <p className="text-[12px] text-white font-mono tracking-wide">Dirección: {museo.direccion}</p>
