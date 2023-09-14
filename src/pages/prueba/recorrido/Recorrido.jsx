@@ -191,7 +191,7 @@ export default function Recorrido({idMuseo}) {
   const [animate,setAnimate]= useState()
   return (
     <Page>
-      <section className='flex justify-around w-screen max-w-full h-[93vh] overflow-hidden  items-center '>
+      <section className='flex justify-around items-center w-screen max-w-full h-[93vh] overflow-hidden   '>
             
             {delRecorridoModal&&<div className=' flex items-center justify-center absolute w-[100%] h-[93vh] z-[1000] bg-black bg-opacity-80'>
             <div className='bg-slate-600 w-[20%] h-[30%] flex flex-col '>

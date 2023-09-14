@@ -181,14 +181,14 @@ export default function Tressesenta ({ids}) {
             
           </div>}
         
-      <section className='flex justify-around max-w-full overflow-hidden'>
+      <section className='flex justify-around items-center max-w-full overflow-hidden h-[92vh]'>
 
               {!open&&<div className="show-info-all-muestras ">
                 <PhoneCase >
 
                     
                     <nav className="flex justify-between p-2 items-center">
-                    <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW</h1>
+                    <h1 className="text-white text-xs mt-[-2px]">MUSEUM VIEW2</h1>
                     <ul className="flex gap-6">
                         <li className="text-colo6-phone-oringe text-lg ml-[-5px]">
                         <BsThreeDotsVertical />

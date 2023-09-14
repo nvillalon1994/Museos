@@ -474,7 +474,7 @@ export default function Tressesenta ({ids}) {
               
 
       </div>}
-      <section className={`flex justify-around h-[92vh] overflow-hidden ${(Object.keys(muestra).length===0)&&' justify-center gap-2 m-auto items-center'}  `}>
+      <section className={`flex justify-around items-center h-[92vh] overflow-hidden ${(Object.keys(muestra).length===0)&&' justify-center gap-2 m-auto items-center'}  `}>
 
 
 
