@@ -207,26 +207,35 @@ export default function Tressesenta ({ids}) {
       // console.error(index+1)
       // createMuestra(id,idRecorrido,`1i_muestra${index+1}`,name.value,museosCol)
       // dispatch(obtenerMuestras({id,idRecorrido}))
-      if(muestras.length<=9){
+      if(muestras.length<9){
         const a = muestras[muestras.length-1]
-      const index =parseInt(a.id.substring(10))
-      console.error(index+1)
-      createMuestra(id,idRecorrido,`1i_muestra${index+2}`,name.value,museosCol)
-      dispatch(obtenerMuestras({id,idRecorrido}))
+        const index =parseInt(a.id.substring(10))
+        console.error(index+1)
+        createMuestra(id,idRecorrido,`1i_muestra${index+1}`,name.value,museosCol)
+        dispatch(obtenerMuestras({id,idRecorrido}))
+        
       }else{
-        if(muestras.length<=19){
-          const a = muestras[muestras.length-1]
-          const index =parseInt(a.id.substring(10))
-          console.error(index+1)
+        const a = muestras[muestras.length-1]
+        const index =parseInt(a.id.substring(10))
+        if(index===9){
           createMuestra(id,idRecorrido,`1j_muestra${index+1}`,name.value,museosCol)
           dispatch(obtenerMuestras({id,idRecorrido}))
         }else{
-          const a = muestras[muestras.length-1]
-          const index =parseInt(a.id.substring(10))
-          console.error(index+1)
-          createMuestra(id,idRecorrido,`1k_muestra${index+1}`,name.value,museosCol)
-          dispatch(obtenerMuestras({id,idRecorrido}))
+          if(muestras.length>9 && muestras.length<=19){
+            const a = muestras[muestras.length-1]
+            const index =parseInt(a.id.substring(10))
+            console.error(index+1)
+            createMuestra(id,idRecorrido,`1j_muestra${index+1}`,name.value,museosCol)
+            dispatch(obtenerMuestras({id,idRecorrido}))
+          }else{
+            const a = muestras[muestras.length-1]
+            const index =parseInt(a.id.substring(10))
+            console.error(index+1)
+            createMuestra(id,idRecorrido,`1k_muestra${index+1}`,name.value,museosCol)
+            dispatch(obtenerMuestras({id,idRecorrido}))
+          }
         }
+        
         
       }
       
